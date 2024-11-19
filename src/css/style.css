@@ -1,0 +1,95 @@
+@import "./auxiliary/variables.css";
+@import "./auxiliary/normalize.css";
+@import "./auxiliary/reboot.css";
+
+body {
+	background-color: bisque;
+}
+
+.App {
+	width: clamp(300px, 90%, 380px);
+	height: 100dvh;
+	padding-top: 20px;
+	margin: 0 auto;
+	/* background-color: #fff; */
+}
+
+.main {
+	/* можно использовать как контейнер */
+}
+
+.units {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	/* margin: 10px 15px 0px 15px; */
+	background-color: gray;
+	border-radius: 8px;
+}
+
+.units__btn {
+	height: 40px;
+	border: 1px solid;
+}
+
+.products {
+	/* контейнер для задания границ слева и справа для всех продуктов */
+	margin: 40px 0px 0px 0px;
+	display: grid;
+	grid-template-columns: 1fr;
+}
+
+.product {
+	/* занимает всю ширину родительского контейнера */
+	/* но всё позиционирование содержимого будет в product__container 
+  для красивых паддингов */
+	display: grid;
+	grid-template-columns: 0.88fr 0.12fr;	
+  gap: 10px;
+  border-radius: 8px;
+}
+
+.product__controls {
+  display: grid;
+  justify-content: center;
+  align-items: center;  
+}
+.product__remove, .product__clear {
+  padding: 5px;
+  border-radius: 8px;
+  background-color: lightgray;
+}
+.product__clear {
+
+}
+
+.product__main {
+  /* наконец-то прямой родительский контейнер для всей начинки */
+	display: grid;
+	grid-template-areas:
+  "a b e"
+  "c d e";
+	grid-template-columns: 1fr 1fr 2fr;
+  align-items: center;
+  gap: 7px;
+	padding: 7px;
+  border-radius: 8px;
+  background-color: lightgray;
+}
+.product__unitlabel {
+  grid-area: a;
+}
+.product__unitinput {
+  grid-area: b;
+  max-width: 80px;
+}
+.product__pricelabel {
+  grid-area: c;
+}
+.product__priceinput {
+  max-width: 80px;
+  grid-area: d;
+}
+.product__result {
+  grid-area: e;
+}
+

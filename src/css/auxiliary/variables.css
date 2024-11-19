@@ -1,0 +1,15 @@
+:root {
+   --main-color: #275e63; /* Основной цвет */
+   --main-light-color: #507d7b; /* Светлый цвет */
+   --main-dark-color: #13484c; /* Темный цвет */
+   --disabled-color: #7d9b9a; /* Цвет для отключенных элементов */
+   --titles-color: #444444;
+   --main-bg-color: #f5f6f9;
+   --disabled-bg-color: #e1e3ec;   
+   --white: #ffffff;
+   --popup-overlay: rgba(0, 0, 0, 0.5);
+   --light-green: #44b156;
+   --bad-rating: #97a2b5;
+   --main-font: "Montserrat", "Helvetica", sans-serif;
+   --animation: 0.155s ease-in-out;
+}
