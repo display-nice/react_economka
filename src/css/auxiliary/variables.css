@@ -3,13 +3,27 @@
    --main-light-color: #507d7b; /* Светлый цвет */
    --main-dark-color: #13484c; /* Темный цвет */
    --disabled-color: #7d9b9a; /* Цвет для отключенных элементов */
-   --titles-color: #444444;
-   --main-bg-color: #f5f6f9;
-   --disabled-bg-color: #e1e3ec;   
-   --white: #ffffff;
+
+   /* продукты */
+   --product-bg-color: white;
+
+   /* кнопки */
+   --units-btns-color: white;
+
+   /* результат */
+   --neutral-price-shadow: darkgray;
+   --best-price-shadow: #4EB052;
+   --second-price-shadow: #FFD900;
+   --third-price-shadow: #FF9700;
+   --worst-price-shadow: #F44538;
+
+   --neutral-price-bg: lightgray;
+   --best-price-bg: #E8F5E9;
+   --second-price-bg: #FFEA73;
+   --third-price-bg: #FFC673;
+   --worst-price-bg: #FFEBEE;
+
    --popup-overlay: rgba(0, 0, 0, 0.5);
-   --light-green: #44b156;
-   --bad-rating: #97a2b5;
    --main-font: "Montserrat", "Helvetica", sans-serif;
    --animation: 0.155s ease-in-out;
 }
