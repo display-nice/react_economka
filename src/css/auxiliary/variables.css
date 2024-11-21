@@ -1,14 +1,19 @@
 :root {
-   --main-color: #275e63; /* Основной цвет */
-   --main-light-color: #507d7b; /* Светлый цвет */
-   --main-dark-color: #13484c; /* Темный цвет */
-   --disabled-color: #7d9b9a; /* Цвет для отключенных элементов */
+   /* Главный фон */
+   --main-bg-color: #ffdf8de0;
+   /* --a: bisque; */
 
    /* продукты */
    --product-bg-color: white;
 
    /* кнопки */
    --units-btns-color: white;
+
+   /* инпуты  */
+   --input-bg: rgb(241, 250, 255);
+   --input-shadow: rgb(158, 224, 247);
+   --input-hover-shadow: rgba(37, 131, 165);
+   --input-focus-shadow: rgba(37, 131, 165);
 
    /* результат */
    --neutral-price-shadow: darkgray;
