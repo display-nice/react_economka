@@ -1,8 +1,7 @@
-export const Units = ({unitBtnsData, activeUnit, handleUnitClick}) => {
-	
+export const Units = ({unitsData, activeUnit, handleUnitClick}) => {	
 	let UnitButtons = [];
-	for (let keyName in unitBtnsData) {
-		const value = unitBtnsData[keyName];
+	for (let keyName in unitsData) {		
+		const value = unitsData[keyName][0];
 		UnitButtons.push(
 			<button
 				key={keyName + "_btn"}

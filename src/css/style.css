@@ -117,7 +117,7 @@ button {
 	grid-template-areas:
 		"a b e"
 		"c d e";
-	grid-template-columns: 1fr 1fr 2fr;
+	grid-template-columns: 1.2fr 1fr 2fr;
 	align-items: center;
 	gap: 7px;
 	padding: 7px;
@@ -140,14 +140,14 @@ button {
 	grid-area: d;
 }
 
-
 .product__input {
 	outline: none;
-	max-width: 74px;
+	max-width: 64px;
 	border-radius: 4px;
 	border: 1px solid rgba(0, 0, 0, 0.75);
 	background-color: var(--input-bg);	
 	box-shadow: 0 0 0 0.4px var(--input-shadow);
+	text-align: right;
 }
 .product__input:hover {
 	box-shadow: 0 0 0 1px var(--input-hover-shadow);
@@ -194,7 +194,6 @@ button {
 }
 
 .products__addnew {
-	/* all: unset; */
 	margin-top: 30px;
 	height: 90px;
 	display: grid;
