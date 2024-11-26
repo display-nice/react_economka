@@ -8,6 +8,8 @@ export const Products = ({ activeUnitData }) => {
 			unitInput: "1000",
 			priceInput: "86",
 			pricePerUnit: "",
+			extraCost: "",
+			extraPercent: "",
 			placeInRating: "",
 		},
 		{
@@ -15,6 +17,8 @@ export const Products = ({ activeUnitData }) => {
 			unitInput: "800",
 			priceInput: "86",
 			pricePerUnit: "",
+			extraCost: "",
+			extraPercent: "",
 			placeInRating: "",
 		},
 	];
@@ -44,9 +48,21 @@ export const Products = ({ activeUnitData }) => {
 		// Сортировка копии макета состояния по Цене За Ед.изм., по возрастанию
 		const sortedNewState = newState.sort((a, b) => Number(a.pricePerUnit) - Number(b.pricePerUnit));
 
-		// Заполнение поля "Место в рейтинге" на основании индекса.
+		// Заполнение поля "Место в рейтинге" на основании индекса
+		// +
+		// Подсчёт, насколько товар дороже чем лучший по цене
 		sortedNewState.forEach((product, index) => {
-			product.placeInRating = index;
+			product.placeInRating = index + 1;
+			if (product.placeInRating === 1) {
+				product.extraCost = "";
+				product.extraPercent = "";
+			} else {
+				product.extraCost = product.pricePerUnit - sortedNewState[0].pricePerUnit;
+				product.extraPercent = `${(
+					((product.pricePerUnit - sortedNewState[0].pricePerUnit) / sortedNewState[0].pricePerUnit) *
+					100
+				).toFixed(2)}%`;
+			}
 		});
 
 		// Сортировка по айди, чтобы вернуть обратно оригинальный порядок отображения карточек на экране
@@ -55,73 +71,128 @@ export const Products = ({ activeUnitData }) => {
 		setProdState(sortedNewState);
 	};
 
-	const products = state.map((product, index) => {
-
-		const resultClassesMapping = [
-			"product__result product__result--best-price",   // Для лучшей цены
-			"product__result product__result--worst-price", // Для худшей цены
+	function getClassesMap(totalProducts) {
+		const resultClassesMap = [
+			"product__result product__result--best-price", // Для лучшей цены
 			"product__result product__result--second-price", // Для второй цены после лучшей
-			"product__result product__result--third-price",  // Для третьей цены
-	  ]; 
-	  // Фильтруем классы в зависимости от количества продуктов
-	  const filteredClasses = resultClassesMapping.slice(0, state.length); 
-	  // Назначаем класс или стандартный, если индекс выходит за пределы
-	  const resultClasses = filteredClasses[index] || "product__result";
+			"product__result product__result--third-price", // Для третьей цены, если продуктов 4
+			"product__result product__result--worst-price", // Для худшей цены
+		];
+		switch (totalProducts) {
+			case 0:
+				return ["product__result"];
+			case 1:
+				return ["product__result"];
+			case 2:
+				return [resultClassesMap[0], resultClassesMap[3]];
+			case 3:
+				return [resultClassesMap[0], resultClassesMap[1], resultClassesMap[3]];
+			case 4:
+				return resultClassesMap;
+			default:
+				return ["product__result"];
+		}
+	}
+	const resultClassesMap = getClassesMap(state.length);
 
-		return (
-			<div className="product" key={"product_id_" + product.id}>
-				<div className="product__main">
-					<label htmlFor="product1__unitinput" className="product__label product__label--unit">
-						{unitName + `, ${unitSmall}.`}
-					</label>
-					<input
-						id="product1__unitinput"
-						type="number"
-						placeholder="0"
-						className="product__input product__input--unit"
-						name="unitInput"
-						value={+product.unitInput}
-						onChange={(e) => changeInput(product.id, e.target.value, e.target.name)}
-					/>
+	const compareProductsPrices = () => {};
 
-					<label htmlFor="product1__priceinput" className="product__label product__label--price">
-						Цена, р.
-					</label>
-					<input
-						id="product1__priceinput"
-						type="number"
-						placeholder="0"
-						className="product__input product__input--price"
-						name="priceInput"
-						value={+product.priceInput}
-						onChange={(e) => changeInput(product.id, e.target.value, e.target.name)}
-					/>
-					<div className={resultClasses}>
-						<p>{`${product.pricePerUnit} р/${unitLarge}`}</p>
-						<p>Лучшая цена</p>
+	const getResultText = (placeInRating) => {
+		if (placeInRating === 1) {
+			return <p>Лучшая цена</p>;
+		} else
+			return (
+				<>
+					<p>Дороже на:</p>
+					<p>20 р/кг | 20%</p>
+				</>
+			);
+	};
+
+	// -------------------------- Подготовка продуктов к рендеру -----------------------------
+	const stateLength = state.length;
+	let products;
+	if (stateLength === 0) {
+		products = "";
+	}
+	if (stateLength >= 1) {
+		products = state.map((product, index) => {
+			// console.log("product.id = ", product.id, "product.placeInRating = ", product.placeInRating);
+			let resultClasses = "product__result";
+			let price;
+			let priceDesc;
+			let priceDiff;
+
+			if (product.placeInRating === "") {
+				priceDesc = <p>Заполните поля</p>;
+			} else if (product.placeInRating === 1) {
+				if (product.pricePerUnit !== "") {
+					price = <p>{`${product.pricePerUnit} р/${unitLarge}`}</p>;
+					priceDesc = <p>Лучшая цена</p>;
+				}
+			}
+			if (product.placeInRating > 1) {
+				price = <p>{`${product.pricePerUnit} р/${unitLarge}`}</p>;
+				priceDesc = <p>Дороже на:</p>;
+				priceDiff = <p>{`${product.extraCost} р/${unitLarge} | ${product.extraPercent}`}</p>;
+			}
+
+			return (
+				<div className="product" key={"product_id_" + product.id}>
+					<div className="product__main">
+						<label htmlFor="product1__unitinput" className="product__label product__label--unit">
+							{unitName + `, ${unitSmall}.`}
+						</label>
+						<input
+							id="product1__unitinput"
+							type="number"
+							placeholder="0"
+							className="product__input product__input--unit"
+							name="unitInput"
+							value={+product.unitInput}
+							onChange={(e) => changeInput(product.id, e.target.value, e.target.name)}
+						/>
+
+						<label htmlFor="product1__priceinput" className="product__label product__label--price">
+							Цена, р.
+						</label>
+						<input
+							id="product1__priceinput"
+							type="number"
+							placeholder="0"
+							className="product__input product__input--price"
+							name="priceInput"
+							value={+product.priceInput}
+							onChange={(e) => changeInput(product.id, e.target.value, e.target.name)}
+						/>
+						<div className={resultClasses}>
+							{price}
+							{priceDesc}
+							{priceDiff}
+						</div>
+					</div>
+					<div className="product__controls">
+						<img
+							className="product__remove"
+							src={`${process.env.PUBLIC_URL}/icons/close.svg`}
+							alt="Удалить"
+						/>
+						<img
+							className="product__clear"
+							src={`${process.env.PUBLIC_URL}/icons/clear.svg`}
+							alt="Очистить"
+						/>
 					</div>
 				</div>
-				<div className="product__controls">
-					<img
-						className="product__remove"
-						src={`${process.env.PUBLIC_URL}/icons/close.svg`}
-						alt="Удалить"
-					/>
-					<img
-						className="product__clear"
-						src={`${process.env.PUBLIC_URL}/icons/clear.svg`}
-						alt="Очистить"
-					/>
-				</div>
-			</div>
-		);
-	});
+			);
+		});
+	}
 	return (
 		<section className="products">
 			{products}
 			<button className="products__addnew" onClick={calcPriceAndRating}>
 				<img src={`${process.env.PUBLIC_URL}/icons/add.svg`} alt="Добавить" />
-				<p>Добавить продукт</p>
+				<p>Подсчитать цены!</p>
 			</button>
 		</section>
 	);
