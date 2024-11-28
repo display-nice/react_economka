@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { ReactComponent as IconSvgAdd } from "../icons/add.svg";
+import { ReactComponent as IconSvgClose } from "../icons/close.svg";
+import { ReactComponent as IconSvgClear } from "../icons/clear.svg";
 
 export const Products = ({ activeUnitData }) => {
 	const [unitName, unitLarge, unitSmall] = activeUnitData;
@@ -122,6 +125,7 @@ export const Products = ({ activeUnitData }) => {
 			let price;
 			let priceDesc;
 			let priceDiff;
+			let priceDiffPercent;
 
 			if (product.placeInRating === "") {
 				priceDesc = <p>Заполните поля</p>;
@@ -134,14 +138,16 @@ export const Products = ({ activeUnitData }) => {
 			if (product.placeInRating > 1) {
 				price = <p>{`${product.pricePerUnit} р/${unitLarge}`}</p>;
 				priceDesc = <p>Дороже на:</p>;
-				priceDiff = <p>{`${product.extraCost} р/${unitLarge} | ${product.extraPercent}`}</p>;
+				// priceDiff = <p>{`${product.extraCost} р/${unitLarge} | ${product.extraPercent}`}</p>;
+				priceDiff = <p>{`${product.extraCost} р/${unitLarge}`}</p>;
+				priceDiffPercent = <p>{`${product.extraPercent}`}</p>
 			}
 
 			return (
 				<div className="product" key={"product_id_" + product.id}>
 					<div className="product__main">
 						<label htmlFor="product1__unitinput" className="product__label product__label--unit">
-							{unitName + `, ${unitSmall}.`}
+							<p>{unitName == 'Штуки' ? unitName : unitName + `, ${unitSmall}.`}</p>							
 						</label>
 						<input
 							id="product1__unitinput"
@@ -154,7 +160,7 @@ export const Products = ({ activeUnitData }) => {
 						/>
 
 						<label htmlFor="product1__priceinput" className="product__label product__label--price">
-							Цена, р.
+							<p>Цена, р.</p>
 						</label>
 						<input
 							id="product1__priceinput"
@@ -169,19 +175,12 @@ export const Products = ({ activeUnitData }) => {
 							{price}
 							{priceDesc}
 							{priceDiff}
+							{priceDiffPercent}
 						</div>
 					</div>
 					<div className="product__controls">
-						<img
-							className="product__remove"
-							src={`${process.env.PUBLIC_URL}/icons/close.svg`}
-							alt="Удалить"
-						/>
-						<img
-							className="product__clear"
-							src={`${process.env.PUBLIC_URL}/icons/clear.svg`}
-							alt="Очистить"
-						/>
+						<IconSvgClose className="product__remove"/>
+						<IconSvgClear className="product__clear"/>						
 					</div>
 				</div>
 			);
@@ -190,8 +189,8 @@ export const Products = ({ activeUnitData }) => {
 	return (
 		<section className="products">
 			{products}
-			<button className="products__addnew" onClick={calcPriceAndRating}>
-				<img src={`${process.env.PUBLIC_URL}/icons/add.svg`} alt="Добавить" />
+			<button className="products__addnew" onClick={calcPriceAndRating}>				
+				<IconSvgAdd/>
 				<p>Подсчитать цены!</p>
 			</button>
 		</section>

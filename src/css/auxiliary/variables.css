@@ -1,34 +1,55 @@
 :root {
    /* Главный фон */
-   --main-bg-color: #ffdf8de0;
-   /* --a: bisque; */
+   /* --main-bg: white; */
+   /* --main-bg: #ffe49efb; */
+   --main-bg: #8997a7;
+
+
+   /* svg-иконки */
+   --icons-main: #d54a50;
+   /* --icons-main: orange; */
 
    /* продукты */
-   --product-bg-color: white;
+   /* --product-bg: #e3e0d1; */
+   --product-bg: #fdfdfd;
 
-   /* кнопки */
-   --units-btns-color: white;
+   /* кнопки единиц измерения */
+   --units-btns-main: #fdfdfd;
+   --units-btns-second: #f5f5f5;
 
-   /* инпуты  */
-   --input-bg: rgb(241, 250, 255);
-   --input-shadow: rgb(158, 224, 247);
-   --input-hover-shadow: rgba(37, 131, 165);
-   --input-focus-shadow: rgba(37, 131, 165);
+   /* числовые инпуты  */
+   --input-bg: #fdfdfd;
+   --input-shadow: #f5f5f5;
+   --input-border: #c0aa98;
+   --input-hover-shadow: #F18F01;
+   --input-focus-shadow: #F18F01;
+
+   /* тени */
+   --neutral-shadow: rgba(0, 0, 0, 0.5);
+   --tiles-shadow: rgba(0, 0, 0, 0.5);
 
    /* результат */
-   --neutral-price-shadow: darkgray;
-   --best-price-shadow: #4EB052;
-   --second-price-shadow: #FFD900;
-   --third-price-shadow: #FF9700;
-   --worst-price-shadow: #F44538;
+   /* --neutral-price-shadow: #888292; */
+   /* --neutral-price-bg: lightgray; */
+   /* --neutral-price-bg: #dbdbdb; */
+   --neutral-price-shadow: #c0aa98;
+   --neutral-price-bg: #dfd1c5;
 
-   --neutral-price-bg: lightgray;
+   --best-price-shadow: #4EB052;
    --best-price-bg: #E8F5E9;
+
+   --second-price-shadow: #FFD900;
    --second-price-bg: #FFEA73;
+
+   --third-price-shadow: #FF9700;
    --third-price-bg: #FFC673;
+
+   --worst-price-shadow: #F44538;
    --worst-price-bg: #FFEBEE;
 
-   --popup-overlay: rgba(0, 0, 0, 0.5);
-   --main-font: "Montserrat", "Helvetica", sans-serif;
-   --animation: 0.155s ease-in-out;
+   /* --popup-overlay: rgba(0, 0, 0, 0.5); */
+   /* --main-font: "Montserrat", "Helvetica", sans-serif; */
+   /* --animation: 0.155s ease-in-out; */
+
+
 }
