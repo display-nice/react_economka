@@ -26,6 +26,13 @@ button {
 	margin: 0 auto;
 }
 
+.text-error {
+	color: var(--error);
+}
+.text-success {
+	color: var(--success);	
+}
+
 .main {
 	/* можно использовать как контейнер */
 }
@@ -131,18 +138,6 @@ button {
 
 
 /* Инпуты и лейблы к ним */
-.product__label--unit {
-	grid-area: a;
-}
-.product__label--price {
-	grid-area: c;
-}
-.product__input--unit {
-	grid-area: b;
-}
-.product__input--price {
-	grid-area: d;
-}
 
 .product__input {
 	outline: none;
@@ -159,20 +154,43 @@ button {
 .product__input:focus {
 	box-shadow: 0 0 0 1.6px var(--input-focus-shadow);
 }
-.product__input--focus {
-	box-shadow: 0 0 0 1.6px var(--input-focus-shadow);
+
+.product__input--error {
+	border: 1.4px solid var(--error) !important;
+	box-shadow: 0 0 0 1.4px var(--error) !important;
+}
+.product__input--error:hover {
+	box-shadow: 0 0 0 1px var(--error) !important;
+}
+.product__input--error:focus {
+	box-shadow: 0 0 0 1.6px var(--error) !important;
 }
 
 .product__label {
 	margin-left: 2px;
 	font-weight: 700;
-	font-size: 14px;
+	font-size: 15px;
 	height: 33px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	text-align: center;
 }
+
+.product__label--unit {
+	grid-area: a;
+}
+.product__label--price {
+	grid-area: c;
+}
+.product__input--unit {
+	grid-area: b;
+}
+.product__input--price {
+	grid-area: d;
+}
+
+
 
 /* Результат */
 .product__result {
@@ -186,26 +204,38 @@ button {
 	margin-left: 3px;
 	background-color: var(--neutral-price-bg);	
 	box-shadow: -3px 0 0 var(--neutral-price-shadow);
-
 	font-size: 13px;
 	font-weight: 700;
 }
+.product__price {
+	font-size: 15px;
+}
 
 .product__result--best-price {
-	background-color: var(--best-price-bg);
-	box-shadow: -3px 0 0 var(--best-price-shadow);
+	/* background-color: var(--best-price-bg); */
+	box-shadow: -3px 0 0 var(--best-price);
 }
-.product__result--second-price {
-	background-color: var(--second-price-bg);
-	box-shadow: -3px 0 0 var(--second-price-shadow);
-}
-.product__result--third-price {
-	background-color: var(--third-price-bg);
-	box-shadow: -3px 0 0 var(--third-price-shadow);
+.product__result--mid-price {
+	background-color: var(--mid-price-bg);
+	box-shadow: -3px 0 0 var(--mid-price);
 }
 .product__result--worst-price {
-	background-color: var(--worst-price-bg);
-	box-shadow: -3px 0 0 var(--worst-price-shadow);
+	/* background-color: var(--worst-price-bg); */
+	box-shadow: -3px 0 0 var(--worst-price);
+}
+
+
+.worst-price {
+	color: var(--worst-price);
+}
+.best-price {
+	color: var(--best-price);
+}
+.price-desc {
+	font-size: 14px;
+}
+.price-diff {
+	font-size: 14px;
 }
 
 .products__addnew {

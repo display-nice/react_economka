@@ -8,112 +8,122 @@ export const Products = ({ activeUnitData }) => {
 	const initialState = [
 		{
 			id: 0,
-			unitInput: "1000",
-			priceInput: "86",
+			unitInput: 1000,
+			priceInput: 86,
 			pricePerUnit: "",
 			extraCost: "",
 			extraPercent: "",
 			placeInRating: "",
+			unitInputError: false,
+			priceInputError: false,
 		},
 		{
 			id: 1,
-			unitInput: "800",
-			priceInput: "86",
+			unitInput: 800,
+			priceInput: 86,
 			pricePerUnit: "",
 			extraCost: "",
 			extraPercent: "",
 			placeInRating: "",
+			unitInputError: false,
+			priceInputError: false,
 		},
 	];
 	const [state, setProdState] = useState(initialState);
+	const stateLength = state.length;
+
+	const validateInput = (value) => {
+		let validity = {
+			onlyPositiveNumbers: false,
+			sixDigits: false,
+		};
+		if (/^0*[1-9]\d*$/.test(value)) validity.onlyPositiveNumbers = true;
+		if (String(value).length <= 6) {
+			validity.sixDigits = true;
+		}
+		return validity;
+	};
 
 	const changeInput = (id, value, inputName) => {
-		const newState = [...state];
+		// Этап 1. Определяем инпут, в котором произошли изменения и валидируем эти изменения.
+		// Если всё валидно, то идём дальше. Если нет - показываем ошибку.
+		let newState = [...state];
 		const i = newState.findIndex((product) => product.id === id);
-		newState[i][`${inputName}`] = value;
+		console.log(value, typeof(value))
+
+		const validity = validateInput(value);
+
+		if (!validity.sixDigits) return
+
+		if (!validity.onlyPositiveNumbers) {
+			newState[i][`${inputName}Error`] = true;			
+		} else {
+			newState[i][`${inputName}Error`] = false;
+			newState[i][`${inputName}`] = value;
+		}
+
+		// Этап 2. Для продуктов с заполненными обоими инпутами считаем ЦЗЕИ (цену за ед. изм)
+		let havePPU = [];
+		let doesntHavePPU = [];
+		newState.forEach((product) => {
+			if (product.unitInput != "" && product.priceInput != "") {
+				// Определение множителя. Для разных ед.изм. он может отличаться.
+				// Для получения килограммов и литров множитель = 1000
+				// для ед.изм. "Штуки" множитель = 1 ;
+				let multiplier;
+				if (unitName === "Вес" || unitName === "Объём") multiplier = 1000;
+				if (unitName === "Штуки") multiplier = 1;
+				product.pricePerUnit = ((product.priceInput / product.unitInput) * multiplier).toFixed(1);
+				havePPU.push(product);
+			} else {
+				doesntHavePPU.push(product);
+			}
+		});
+		// Этап 3, вариант 1:
+		// Если продукт всего один, то больше ничего делать не нужно.
+		if (stateLength === 1) {
+			// console.log("newState этап 3, вариант 1", newState);
+			setProdState(newState);
+			return;
+		}
+		// Этап 3, вариант 2:
+		// Если продуктов два и более, то нужно:
+		// 1. Для продуктов, у которых есть ЦЗЕИ, нужно определить их место в рейтинге
+		// 	Это делается путём сортировки (по возрастанию ЦЗЕИ).
+		// 2. Соединить полученный массив с продуктами, у которых нет ЦЗЕИ,
+		// 	Такие продукты лежат в массиве doesntHavePPU ещё с этапа 2.
+		if (stateLength >= 2) {
+			// Сортировка копии макета состояния по ЦЗЕИ, по возрастанию
+			const sortedHavePPU = havePPU.sort((a, b) => Number(a.pricePerUnit) - Number(b.pricePerUnit));
+
+			// Заполнение поля "Место в рейтинге" на основании индекса
+			// + Подсчёт, насколько товар дороже чем лучший по цене
+			sortedHavePPU.forEach((product, index) => {
+				product.placeInRating = index + 1;
+				if (product.placeInRating === 1) {
+					product.extraCost = "";
+					product.extraPercent = "";
+				} else {
+					product.extraCost = (product.pricePerUnit - sortedHavePPU[0].pricePerUnit).toFixed(0);
+					product.extraPercent = `${(
+						((product.pricePerUnit - sortedHavePPU[0].pricePerUnit) /
+							sortedHavePPU[0].pricePerUnit) *
+						100
+					).toFixed(0)}%`;
+				}
+			});
+			
+			// похоже надо законкатить sortedHavePPU и doesntHavePPU
+			// а затем отсортировать его по id чтоб сохранить оригинальный порядок вывода.
+			newState = sortedHavePPU.concat(doesntHavePPU).sort((a, b) => a.id - b.id);
+			// console.log("newState этап 3, вариант 2", newState);
+		}
+		console.log(newState[i]);
 		setProdState(newState);
 	};
 
-	const calcPriceAndRating = () => {
-		const newState = [...state];
-		// Определение множителя. Для разных ед.изм. он может отличаться.
-		// Для получения килограммов и литров множитель = 1000
-		// для ед.изм. "Штуки" множитель = 1 ;
-		let multiplier;
-		if (unitName === "Вес" || unitName === "Объём") multiplier = 1000;
-		if (unitName === "Штуки") multiplier = 1;
-
-		// Подсчёт цены за ед.изм.
-		newState.forEach((product) => {
-			product.pricePerUnit = (product.priceInput / product.unitInput) * multiplier;
-		});
-
-		// Сортировка копии макета состояния по Цене За Ед.изм., по возрастанию
-		const sortedNewState = newState.sort((a, b) => Number(a.pricePerUnit) - Number(b.pricePerUnit));
-
-		// Заполнение поля "Место в рейтинге" на основании индекса
-		// +
-		// Подсчёт, насколько товар дороже чем лучший по цене
-		sortedNewState.forEach((product, index) => {
-			product.placeInRating = index + 1;
-			if (product.placeInRating === 1) {
-				product.extraCost = "";
-				product.extraPercent = "";
-			} else {
-				product.extraCost = product.pricePerUnit - sortedNewState[0].pricePerUnit;
-				product.extraPercent = `${(
-					((product.pricePerUnit - sortedNewState[0].pricePerUnit) / sortedNewState[0].pricePerUnit) *
-					100
-				).toFixed(2)}%`;
-			}
-		});
-
-		// Сортировка по айди, чтобы вернуть обратно оригинальный порядок отображения карточек на экране
-		sortedNewState.sort((a, b) => a.id - b.id);
-
-		setProdState(sortedNewState);
-	};
-
-	function getClassesMap(totalProducts) {
-		const resultClassesMap = [
-			"product__result product__result--best-price", // Для лучшей цены
-			"product__result product__result--second-price", // Для второй цены после лучшей
-			"product__result product__result--third-price", // Для третьей цены, если продуктов 4
-			"product__result product__result--worst-price", // Для худшей цены
-		];
-		switch (totalProducts) {
-			case 0:
-				return ["product__result"];
-			case 1:
-				return ["product__result"];
-			case 2:
-				return [resultClassesMap[0], resultClassesMap[3]];
-			case 3:
-				return [resultClassesMap[0], resultClassesMap[1], resultClassesMap[3]];
-			case 4:
-				return resultClassesMap;
-			default:
-				return ["product__result"];
-		}
-	}
-	const resultClassesMap = getClassesMap(state.length);
-
-	const compareProductsPrices = () => {};
-
-	const getResultText = (placeInRating) => {
-		if (placeInRating === 1) {
-			return <p>Лучшая цена</p>;
-		} else
-			return (
-				<>
-					<p>Дороже на:</p>
-					<p>20 р/кг | 20%</p>
-				</>
-			);
-	};
-
 	// -------------------------- Подготовка продуктов к рендеру -----------------------------
-	const stateLength = state.length;
+
 	let products;
 	if (stateLength === 0) {
 		products = "";
@@ -122,54 +132,73 @@ export const Products = ({ activeUnitData }) => {
 		products = state.map((product, index) => {
 			// console.log("product.id = ", product.id, "product.placeInRating = ", product.placeInRating);
 			let resultClasses = "product__result";
+			let unitInputClasses = "product__input product__input--unit";
+			let priceInputClasses = "product__input product__input--price";
+
 			let price;
 			let priceDesc;
 			let priceDiff;
 			let priceDiffPercent;
 
-			if (product.placeInRating === "") {
-				priceDesc = <p>Заполните поля</p>;
-			} else if (product.placeInRating === 1) {
-				if (product.pricePerUnit !== "") {
-					price = <p>{`${product.pricePerUnit} р/${unitLarge}`}</p>;
-					priceDesc = <p>Лучшая цена</p>;
+			if (product.unitInputError || product.priceInputError) {
+				priceDesc = (
+					<p className="text-error">Введите целое положительное число (макс. 6 знаков)</p>
+				);
+				if (product.unitInputError) unitInputClasses += " product__input--error";
+				if (product.priceInputError) priceInputClasses += " product__input--error";
+			} else {
+				if (product.placeInRating === "") {
+					priceDesc = <p>Заполните поля</p>;
 				}
-			}
-			if (product.placeInRating > 1) {
-				price = <p>{`${product.pricePerUnit} р/${unitLarge}`}</p>;
-				priceDesc = <p>Дороже на:</p>;
-				// priceDiff = <p>{`${product.extraCost} р/${unitLarge} | ${product.extraPercent}`}</p>;
-				priceDiff = <p>{`${product.extraCost} р/${unitLarge}`}</p>;
-				priceDiffPercent = <p>{`${product.extraPercent}`}</p>
-			}
-
+				if (product.placeInRating === 1) {
+					if (product.pricePerUnit !== "") {
+						resultClasses += " product__result--best-price"
+						price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
+						priceDesc = <p className="price-desc best-price">Лучшая цена</p>;
+					}
+				}
+				if (product.placeInRating > 1) {
+					resultClasses += " product__result--worst-price"
+					price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
+					priceDesc = <p className="price-desc worst-price">Дороже на:</p>;
+					priceDiff = <p className="price-diff"><span className="worst-price">{`${product.extraCost} р/${unitLarge}`}</span> | <span className="worst-price">{`${product.extraPercent}`}</span></p>;
+					// priceDiff = <p className="text-error">{`${product.extraCost} р/${unitLarge}`}</p>;
+					// priceDiffPercent = <p className="text-error">{`${product.extraPercent}`}</p>;
+				}
+			}			
 			return (
 				<div className="product" key={"product_id_" + product.id}>
 					<div className="product__main">
-						<label htmlFor="product1__unitinput" className="product__label product__label--unit">
-							<p>{unitName == 'Штуки' ? unitName : unitName + `, ${unitSmall}.`}</p>							
+						<label
+							htmlFor={"product_id_" + product.id + "_unitinput"}
+							className="product__label product__label--unit"
+						>
+							<p>{unitName == "Штуки" ? unitName : unitName + `, ${unitSmall}.`}</p>
 						</label>
 						<input
-							id="product1__unitinput"
+							id={"product_id_" + product.id + "_unitinput"}
 							type="number"
 							placeholder="0"
-							className="product__input product__input--unit"
+							className={unitInputClasses}
 							name="unitInput"
 							value={+product.unitInput}
-							onChange={(e) => changeInput(product.id, e.target.value, e.target.name)}
+							onChange={(e) => changeInput(product.id, Number(e.target.value), e.target.name)}
 						/>
 
-						<label htmlFor="product1__priceinput" className="product__label product__label--price">
+						<label
+							htmlFor={"product_id_" + product.id + "_priceinput"}
+							className="product__label product__label--price"
+						>
 							<p>Цена, р.</p>
 						</label>
 						<input
-							id="product1__priceinput"
+							id={"product_id_" + product.id + "_priceinput"}
 							type="number"
 							placeholder="0"
-							className="product__input product__input--price"
+							className={priceInputClasses}
 							name="priceInput"
 							value={+product.priceInput}
-							onChange={(e) => changeInput(product.id, e.target.value, e.target.name)}
+							onChange={(e) => changeInput(product.id, Number(e.target.value), e.target.name)}
 						/>
 						<div className={resultClasses}>
 							{price}
@@ -179,8 +208,8 @@ export const Products = ({ activeUnitData }) => {
 						</div>
 					</div>
 					<div className="product__controls">
-						<IconSvgClose className="product__remove"/>
-						<IconSvgClear className="product__clear"/>						
+						<IconSvgClose className="product__remove" />
+						<IconSvgClear className="product__clear" />
 					</div>
 				</div>
 			);
@@ -188,85 +217,11 @@ export const Products = ({ activeUnitData }) => {
 	}
 	return (
 		<section className="products">
-			{products}
-			<button className="products__addnew" onClick={calcPriceAndRating}>				
-				<IconSvgAdd/>
-				<p>Подсчитать цены!</p>
+			<form>{products}</form>
+			<button className="products__addnew">
+				<IconSvgAdd />
+				<p>Добавить продукт</p>
 			</button>
 		</section>
 	);
 };
-
-/* <div className="product">
-	<div className="product__main">
-		<label htmlFor="product1__unitinput" className="product__label product__label--unit">
-			Объём
-		</label>
-		<input
-			id="product1__unitinput"
-			type="number"
-			placeholder="0"
-			className="product__input product__input--unit"
-		/>
-		<label htmlFor="product1__priceinput" className="product__label product__label--price">
-			Цена
-		</label>
-		<input
-			id="product1__priceinput"
-			type="number"
-			placeholder="0"
-			className="product__input product__input--price"
-		/>
-		<div className="product__result product__result--best-price">
-			<p>100р/л</p>
-			<p>Лучшая цена</p>
-		</div>
-	</div>
-	<div className="product__controls">
-		<img
-			className="product__remove"
-			src={`${process.env.PUBLIC_URL}/icons/close.svg`}
-			alt="Удалить"
-		/>
-		<img
-			className="product__clear"
-			src={`${process.env.PUBLIC_URL}/icons/clear.svg`}
-			alt="Очистить"
-		/>
-	</div>
-</div>
-<div className="product">
-	<div className="product__main">
-		<label htmlFor="product2__unitinput" className="product__label product__label--unit">
-			Объём
-		</label>
-		<input
-			id="product2__unitinput"
-			type="number"
-			placeholder="0"
-			className="product__input product__input--unit"
-		/>
-		<label htmlFor="product2__priceinput" className="product__label product__label--price">
-			Цена
-		</label>
-		<input
-			id="product2__priceinput"
-			type="number"
-			placeholder="0"
-			className="product__input product__input--price"
-		/>
-		<div className="product__result product__result--worst-price">
-			<p>120 р/кг</p>
-			<p>Дороже на:</p>
-			<p>20 р/кг | 20%</p>
-		</div>
-	</div>
-	<div className="product__controls">
-		<button className="product__remove">
-			<img src={`${process.env.PUBLIC_URL}/icons/close.svg`} alt="Удалить" />
-		</button>
-		<button className="product__clear">
-			<img src={`${process.env.PUBLIC_URL}/icons/clear.svg`} alt="Очистить" />
-		</button>
-	</div>
-</div> */
