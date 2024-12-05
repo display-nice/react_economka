@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ReactComponent as IconSvgAdd } from "../icons/add.svg";
 import { ReactComponent as IconSvgClose } from "../icons/close.svg";
 import { ReactComponent as IconSvgClear } from "../icons/clear.svg";
@@ -16,6 +16,8 @@ export const Products = ({ activeUnitData }) => {
 			placeInRating: "",
 			unitInputError: false,
 			priceInputError: false,
+			someInputIsEmpty: false,
+			readyToCalc: true,
 		},
 		{
 			id: 1,
@@ -27,46 +29,40 @@ export const Products = ({ activeUnitData }) => {
 			placeInRating: "",
 			unitInputError: false,
 			priceInputError: false,
+			someInputIsEmpty: false,
+			readyToCalc: true,
 		},
 	];
 	const [state, setProdState] = useState(initialState);
 	const stateLength = state.length;
 
-	const validateInput = (value) => {
-		let validity = {
-			onlyPositiveNumbers: false,
-			sixDigits: false,
-		};
-		if (/^0*[1-9]\d*$/.test(value)) validity.onlyPositiveNumbers = true;
-		if (String(value).length <= 6) {
-			validity.sixDigits = true;
+	const validateInput = (value, product, inputName) => {
+		const updatedProduct = { ...product };
+		if (value === "") {
+			updatedProduct.someInputIsEmpty = true;
+			updatedProduct[`${inputName}Error`] = false;
+			updatedProduct.readyToCalc = false;
+		} else {
+			if (Number.isInteger(value) && value > 0 && String(value).length <= 6) {
+				updatedProduct.someInputIsEmpty = false;
+				updatedProduct[`${inputName}Error`] = false;
+				updatedProduct.readyToCalc = true;
+			} else {
+				updatedProduct.someInputIsEmpty = false;
+				updatedProduct[`${inputName}Error`] = true;
+				updatedProduct.readyToCalc = false;
+			}
 		}
-		return validity;
+		return updatedProduct;
 	};
 
-	const changeInput = (id, value, inputName) => {
-		// Этап 1. Определяем инпут, в котором произошли изменения и валидируем эти изменения.
-		// Если всё валидно, то идём дальше. Если нет - показываем ошибку.
+	const makeCalculations = (state) => {
 		let newState = [...state];
-		const i = newState.findIndex((product) => product.id === id);
-		console.log(value, typeof(value))
-
-		const validity = validateInput(value);
-
-		if (!validity.sixDigits) return
-
-		if (!validity.onlyPositiveNumbers) {
-			newState[i][`${inputName}Error`] = true;			
-		} else {
-			newState[i][`${inputName}Error`] = false;
-			newState[i][`${inputName}`] = value;
-		}
-
-		// Этап 2. Для продуктов с заполненными обоими инпутами считаем ЦЗЕИ (цену за ед. изм)
-		let havePPU = [];
-		let doesntHavePPU = [];
+		// определить кол-во продуктов, готовых к вычислениям
+		let productsReadyToCalc = [];
+		let productsNOTReadyToCalc = [];
 		newState.forEach((product) => {
-			if (product.unitInput != "" && product.priceInput != "") {
+			if (product.readyToCalc) {
 				// Определение множителя. Для разных ед.изм. он может отличаться.
 				// Для получения килограммов и литров множитель = 1000
 				// для ед.изм. "Штуки" множитель = 1 ;
@@ -74,53 +70,104 @@ export const Products = ({ activeUnitData }) => {
 				if (unitName === "Вес" || unitName === "Объём") multiplier = 1000;
 				if (unitName === "Штуки") multiplier = 1;
 				product.pricePerUnit = ((product.priceInput / product.unitInput) * multiplier).toFixed(1);
-				havePPU.push(product);
+				productsReadyToCalc.push(product);				
 			} else {
-				doesntHavePPU.push(product);
+				product.pricePerUnit = "";
+				product.extraCost = "";
+				product.extraPercent = "";
+				product.placeInRating = "";
+				productsNOTReadyToCalc.push(product);
 			}
 		});
-		// Этап 3, вариант 1:
-		// Если продукт всего один, то больше ничего делать не нужно.
-		if (stateLength === 1) {
-			// console.log("newState этап 3, вариант 1", newState);
+
+		if (productsReadyToCalc.length === 0) {			
+			return;
+		}
+		// Если готовый к расчётам продукт всего один, то больше ничего делать не нужно.
+		if (productsReadyToCalc.length === 1) {
 			setProdState(newState);
 			return;
 		}
-		// Этап 3, вариант 2:
-		// Если продуктов два и более, то нужно:
-		// 1. Для продуктов, у которых есть ЦЗЕИ, нужно определить их место в рейтинге
-		// 	Это делается путём сортировки (по возрастанию ЦЗЕИ).
-		// 2. Соединить полученный массив с продуктами, у которых нет ЦЗЕИ,
-		// 	Такие продукты лежат в массиве doesntHavePPU ещё с этапа 2.
-		if (stateLength >= 2) {
+		// Если их два и больше, то уже можем посчитать среднюю цену и определить место в рейтинге
+		if (productsReadyToCalc.length >= 2) {
+			
 			// Сортировка копии макета состояния по ЦЗЕИ, по возрастанию
-			const sortedHavePPU = havePPU.sort((a, b) => Number(a.pricePerUnit) - Number(b.pricePerUnit));
+			const sortedPRTC = productsReadyToCalc.sort((a, b) => Number(a.pricePerUnit) - Number(b.pricePerUnit));
 
 			// Заполнение поля "Место в рейтинге" на основании индекса
 			// + Подсчёт, насколько товар дороже чем лучший по цене
-			sortedHavePPU.forEach((product, index) => {
+			sortedPRTC.forEach((product, index) => {
 				product.placeInRating = index + 1;
 				if (product.placeInRating === 1) {
 					product.extraCost = "";
 					product.extraPercent = "";
 				} else {
-					product.extraCost = (product.pricePerUnit - sortedHavePPU[0].pricePerUnit).toFixed(0);
+					product.extraCost = (product.pricePerUnit - sortedPRTC[0].pricePerUnit).toFixed(0);
 					product.extraPercent = `${(
-						((product.pricePerUnit - sortedHavePPU[0].pricePerUnit) /
-							sortedHavePPU[0].pricePerUnit) *
+						((product.pricePerUnit - sortedPRTC[0].pricePerUnit) /
+						sortedPRTC[0].pricePerUnit) *
 						100
 					).toFixed(0)}%`;
 				}
 			});
 			
-			// похоже надо законкатить sortedHavePPU и doesntHavePPU
-			// а затем отсортировать его по id чтоб сохранить оригинальный порядок вывода.
-			newState = sortedHavePPU.concat(doesntHavePPU).sort((a, b) => a.id - b.id);
-			// console.log("newState этап 3, вариант 2", newState);
+			// отсортировать по id чтоб сохранить оригинальный порядок вывода.
+			newState = sortedPRTC.concat(productsNOTReadyToCalc).sort((a, b) => a.id - b.id);			
+			setProdState(newState);
 		}
-		console.log(newState[i]);
-		setProdState(newState);
 	};
+
+	const changeInput = (id, value, inputName) => {
+		let newState = [...state];
+		const i = newState.findIndex((product) => product.id === id);
+		newState[i] = validateInput(value, newState[i], inputName);
+		newState[i][`${inputName}`] = value;
+		makeCalculations(newState);
+	};
+	
+	const addNewProduct = () => {
+		const newState = [...state];
+		const existingIds = newState.map((product) => product.id);
+		let newId = Math.max(...existingIds) + 1;
+		if (newId === -Infinity) newId = 0;
+		newState.push({
+			id: newId,
+			unitInput: "",
+			priceInput: "",
+			pricePerUnit: "",
+			extraCost: "",
+			extraPercent: "",
+			placeInRating: "",
+			unitInputError: false,
+			priceInputError: false,
+		});
+		// setProdState(newState);
+		makeCalculations(newState)
+	};
+
+	const removeThisProduct = (id) => {
+		console.log("removeThisProduct start");
+		let newState = [...state];
+		const i = newState.findIndex((product) => product.id === id);
+		newState.splice(i, 1)
+		makeCalculations(newState)
+		// setProdState(newState);
+	};
+
+	const clearInputs = (id) => {
+		console.log("clearInputs start");
+		const newState = [...state];
+		const i = newState.findIndex((product) => product.id === id);
+		newState[i].unitInput = "";
+		newState[i].priceInput = "";
+		makeCalculations(newState)
+		// setProdState(newState);
+	};
+
+	useEffect(() => {
+		makeCalculations(state)
+	}, [])
+	
 
 	// -------------------------- Подготовка продуктов к рендеру -----------------------------
 
@@ -152,20 +199,25 @@ export const Products = ({ activeUnitData }) => {
 				}
 				if (product.placeInRating === 1) {
 					if (product.pricePerUnit !== "") {
-						resultClasses += " product__result--best-price"
+						resultClasses += " product__result--best-price";
 						price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
 						priceDesc = <p className="price-desc best-price">Лучшая цена</p>;
 					}
 				}
 				if (product.placeInRating > 1) {
-					resultClasses += " product__result--worst-price"
+					resultClasses += " product__result--worst-price";
 					price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
 					priceDesc = <p className="price-desc worst-price">Дороже на:</p>;
-					priceDiff = <p className="price-diff"><span className="worst-price">{`${product.extraCost} р/${unitLarge}`}</span> | <span className="worst-price">{`${product.extraPercent}`}</span></p>;
+					priceDiff = (
+						<p className="price-diff">
+							<span className="worst-price">{`${product.extraCost} р/${unitLarge}`}</span> |{" "}
+							<span className="worst-price">{`${product.extraPercent}`}</span>
+						</p>
+					);
 					// priceDiff = <p className="text-error">{`${product.extraCost} р/${unitLarge}`}</p>;
 					// priceDiffPercent = <p className="text-error">{`${product.extraPercent}`}</p>;
 				}
-			}			
+			}
 			return (
 				<div className="product" key={"product_id_" + product.id}>
 					<div className="product__main">
@@ -173,7 +225,7 @@ export const Products = ({ activeUnitData }) => {
 							htmlFor={"product_id_" + product.id + "_unitinput"}
 							className="product__label product__label--unit"
 						>
-							<p>{unitName == "Штуки" ? unitName : unitName + `, ${unitSmall}.`}</p>
+							<p>{unitName === "Штуки" ? unitName : unitName + `, ${unitSmall}.`}</p>
 						</label>
 						<input
 							id={"product_id_" + product.id + "_unitinput"}
@@ -208,8 +260,11 @@ export const Products = ({ activeUnitData }) => {
 						</div>
 					</div>
 					<div className="product__controls">
-						<IconSvgClose className="product__remove" />
-						<IconSvgClear className="product__clear" />
+						<IconSvgClose
+							className="product__remove"
+							onClick={() => removeThisProduct(product.id)}
+						/>
+						<IconSvgClear className="product__clear" onClick={() => clearInputs(product.id)} />
 					</div>
 				</div>
 			);
@@ -218,7 +273,7 @@ export const Products = ({ activeUnitData }) => {
 	return (
 		<section className="products">
 			<form>{products}</form>
-			<button className="products__addnew">
+			<button className="products__addnew" onClick={addNewProduct}>
 				<IconSvgAdd />
 				<p>Добавить продукт</p>
 			</button>
