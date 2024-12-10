@@ -216,7 +216,7 @@ button {
 	box-shadow: -3px 0 0 var(--best-price);
 }
 .product__result--mid-price {
-	background-color: var(--mid-price-bg);
+	/* background-color: var(--mid-price-bg); */
 	box-shadow: -3px 0 0 var(--mid-price);
 }
 .product__result--worst-price {
@@ -225,11 +225,15 @@ button {
 }
 
 
-.worst-price {
-	color: var(--worst-price);
-}
 .best-price {
 	color: var(--best-price);
+}
+
+.mid-price {
+	color: var(--mid-price);
+}
+.worst-price {
+	color: var(--worst-price);
 }
 .price-desc {
 	font-size: 14px;
