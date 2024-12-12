@@ -8,36 +8,34 @@ export const Products = ({ activeUnitData }) => {
 	const initialState = [
 		{
 			id: 0,
-			// unitInput: "1000",
-			unitInput: "999999",
+			unitInput: "",
 			unitInputIsEmpty: false,
 			unitInputError: false,
-			// priceInput: "86",
-			priceInput: "6",
+			priceInput: "",
 			priceInputIsEmpty: false,
 			priceInputError: false,
-			TEST: false,
 			haveProblems: false,
 			pricePerUnit: "",
 			extremePricePerUnit: false,
 			extraCost: "",
 			extraPercent: "",
+			extremeExtraPercent: "",
 			placeInRating: "",
 		},
 		{
 			id: 1,
-			unitInput: "800",
+			unitInput: "",
 			unitInputIsEmpty: false,
 			unitInputError: false,
-			priceInput: "86",
+			priceInput: "",
 			priceInputIsEmpty: false,
 			priceInputError: false,
-			TEST: false,
 			haveProblems: false,
 			pricePerUnit: "",
 			extremePricePerUnit: false,
 			extraCost: "",
 			extraPercent: "",
+			extremeExtraPercent: "",
 			placeInRating: "",
 		},
 	];
@@ -46,21 +44,21 @@ export const Products = ({ activeUnitData }) => {
 	const defaultProduct = {
 		id: null,
 		unitInput: "",
-		unitInputIsEmpty: true,
+		unitInputIsEmpty: false,
 		unitInputError: false,
 		priceInput: "",
-		priceInputIsEmpty: true,
+		priceInputIsEmpty: false,
 		priceInputError: false,
 		haveProblems: false,
 		pricePerUnit: "",
 		extremePricePerUnit: false,
 		extraCost: "",
 		extraPercent: "",
+		extremeExtraPercent: "",
 		placeInRating: "",
 	};
 
 	function checkAndCalc(incomingState) {
-		// console.log("state на старте checkAndCalc", incomingState);
 		const inputNames = ["unitInput", "priceInput"];
 
 		let havePPU = [];
@@ -72,7 +70,6 @@ export const Products = ({ activeUnitData }) => {
 			inputNames.forEach((inputName) => {
 				const inputValue = product[`${inputName}`];
 				if (inputValue > 0 && inputValue.length <= 6) {
-					// if (product.id === 0 && inputName === "unitInput") console.log(inputValue.length);
 					changedProduct[`${inputName}IsEmpty`] = false;
 					changedProduct[`${inputName}Error`] = false;
 				} else {
@@ -100,15 +97,12 @@ export const Products = ({ activeUnitData }) => {
 		// !! можно объединить цикл сверху и цикл снизу
 
 		for (let product of changedState) {
-			// if (product.id === 0) {
-			// 	console.log("пошёл расчёт. changedState[0].haveProblems = ", changedState[0].haveProblems);
-			// 	console.log("пошёл расчёт. changedState[0].TEST = ", changedState[0]["TEST"]);
-			// }
 			product.placeInRating = "";
 			product.pricePerUnit = "";
 			product.extremePricePerUnit = "";
 			product.extraCost = "";
 			product.extraPercent = "";
+			product.extremeExtraPercent = "";
 			if (product.haveProblems === false) {
 				// Определение множителя. Для разных ед.изм. он может отличаться.
 				// Для получения килограммов и литров множитель = 1000
@@ -119,8 +113,8 @@ export const Products = ({ activeUnitData }) => {
 
 				let pricePerUnit = ((product.priceInput / product.unitInput) * multiplier).toFixed(2);
 
-				if (pricePerUnit < 0.1) {
-					product.extremePricePerUnit = "менее 0.1";
+				if (pricePerUnit < 1) {
+					product.extremePricePerUnit = "менее 1";
 					doesntHavePPU.push(product);
 				} else if (pricePerUnit > 1000000) {
 					product.extremePricePerUnit = "более 1 млн.";
@@ -130,31 +124,20 @@ export const Products = ({ activeUnitData }) => {
 					havePPU.push(product);
 				}
 			} else doesntHavePPU.push(product);
-			console.log('product после расчёта ППЮ', product);
 		}
 
 		// определить кол-во продуктов, готовых к вычислениям
-
-		// console.log('newState после ПЕРВОГО расчёта: ', newState);
-		// if (havePPU.length === 0) {
-		// 	console.log("havePPU.length === 0, выход без расчётов");			
-		// 	setComparedProducts(0);
-		// 	return;
-		// }
-		// Если готовый к расчётам продукт всего один, то больше ничего делать не нужно.
+		// Если готовых к расчётам продуктов нет или он всего один, то сравнивать и считать рейтинг.
 		if (havePPU.length === 0 || havePPU.length === 1) {
-			console.log("havePPU.length === 0 or 1");
 			let newState = havePPU.concat(doesntHavePPU);
 			newState.sort((a, b) => a.id - b.id);
-			// console.log(newState[1]);
 			setProdState(newState);
 			setComparedProducts(0);
 			return;
 		}
-		// Если их два и больше, то уже можем посчитать среднюю цену и определить место в рейтинге
+		// Если их два и больше, то уже можемс равнивать и считать рейтинг.
 		if (havePPU.length >= 2) {
-			console.log("havePPU.length >= 2");
-			// Сортировка копии макета состояния по ЦЗЕИ, по возрастанию
+			// Сортировка копии макета состояния по pricePerUnit (PPU), по возрастанию
 			havePPU.sort((a, b) => Number(a.pricePerUnit) - Number(b.pricePerUnit));
 			// Заполнение поля "Место в рейтинге" на основании индекса
 			// + Подсчёт, насколько товар дороже чем лучший по цене
@@ -164,66 +147,60 @@ export const Products = ({ activeUnitData }) => {
 					product.extraCost = "";
 					product.extraPercent = "";
 				} else {
-					product.extraCost = (product.pricePerUnit - havePPU[0].pricePerUnit).toFixed(0);
-					product.extraPercent = `${(
+					product.extraCost = (product.pricePerUnit - havePPU[0].pricePerUnit).toFixed(2);
+
+					let EP = `${(
 						((product.pricePerUnit - havePPU[0].pricePerUnit) / havePPU[0].pricePerUnit) *
 						100
-					).toFixed(0)}%`;
+					).toFixed(0)}`;
+
+					if (EP < 1) {
+						product.extremeExtraPercent = "менее 1%";
+					} else if (EP > 1000) {
+						product.extremeExtraPercent = "более 1000%";
+					} else {
+						product.extraPercent = EP += '%';						
+					}
+					
 				}
 			});
-			// console.log('havePPU = ', havePPU, 'doesntHavePPU = ', doesntHavePPU);
+
 			// отсортировать по id чтоб сохранить оригинальный порядок вывода.
 			const newState = havePPU.concat(doesntHavePPU).sort((a, b) => a.id - b.id);
-			// console.log('newState после ВТОРОГО расчёта: ', newState);
 			setComparedProducts(havePPU.length);
 			setProdState(newState);
 		}
 	}
 
 	function changeInput(id, value, inputName) {
-		// console.log("оригинальный стейт на старте changeInput = ", state);
 		const stateCopy = JSON.parse(JSON.stringify(state));
-		// console.log("newState на старте changeInput = ", newState);
-
 		const i = stateCopy.findIndex((product) => product.id === id);
 		stateCopy[i][`${inputName}`] = value;
-		// let productWithNewValue = { ...defaultProduct, [inputName]: value };
-		// stateCopy[i] = productWithNewValue;
-		// setProdState(stateCopy)
-		// newState[i] = validateInput(value, newState[i], inputName);
-		// newState[i] = { ...newState[i], [`${inputName}`]: value };
-		// console.log("newState в changeInput после изменения value = ", stateCopy);
 		checkAndCalc(stateCopy);
 	}
 
 	const addNewProduct = () => {
-		const newState = JSON.parse(JSON.stringify(state));
-		const existingIds = newState.map((product) => product.id);
+		const stateCopy = JSON.parse(JSON.stringify(state));
+		const existingIds = stateCopy.map((product) => product.id);
 		let newId = Math.max(...existingIds) + 1;
 		if (newId === -Infinity) newId = 0;
-		newState.push({ ...defaultProduct });
-		checkAndCalc(newState);
+		stateCopy.push({ ...defaultProduct, id: newId });
+		checkAndCalc(stateCopy);
 	};
 
 	const removeProduct = (id) => {
-		console.log("removeProduct start");
-		let newState = JSON.parse(JSON.stringify(state));
-		const i = newState.findIndex((product) => product.id === id);
-		newState.splice(i, 1);
-		checkAndCalc(newState);
+		let stateCopy = JSON.parse(JSON.stringify(state));
+		const i = stateCopy.findIndex((product) => product.id === id);
+		stateCopy.splice(i, 1);
+		checkAndCalc(stateCopy);
 	};
 
-	const clearInputs = (id) => {
-		console.log("clearInputs start");
-		const newState = JSON.parse(JSON.stringify(state));
-		const i = newState.findIndex((product) => product.id === id);
-		newState[i] = { ...defaultProduct, [id]: id };
-		// newState[i].id = id;
-		console.log(newState[i]);
-		checkAndCalc(newState);
+	const clearInputs = (inputId) => {
+		const stateCopy = JSON.parse(JSON.stringify(state));
+		const i = stateCopy.findIndex((product) => product.id === inputId);
+		stateCopy[i] = { ...defaultProduct, id: inputId };
+		checkAndCalc(stateCopy);
 	};
-
-	const createNewId = (newState) => {};
 
 	useEffect(() => {
 		const stateCopy = JSON.parse(JSON.stringify(state));
@@ -232,14 +209,11 @@ export const Products = ({ activeUnitData }) => {
 
 	// -------------------------- Рендер -----------------------------
 
-	// console.log('Рендер. comparedProducts = ', comparedProducts)
 	let products;
 	if (state.length === 0) {
 		products = "";
 	} else {
-		// console.log('рендер. стейт = ', state);
-		products = state.map((product, index) => {
-			// console.log("product.id = ", product.id, "product.placeInRating = ", product.placeInRating);
+		products = state.map((product) => {			
 			let resultClasses = "product__result";
 			let unitInputClasses = "product__input product__input--unit";
 			let priceInputClasses = "product__input product__input--price";
@@ -248,12 +222,8 @@ export const Products = ({ activeUnitData }) => {
 			let priceDesc;
 			let priceDiff;
 			let priceDiffPercent;
-
-			console.log('product.extremePricePerUnit = ', product.extremePricePerUnit);
-
-			// !! здесь надо корректно продумать что показывать, если у нас на одном поле пусто, на другом ошибка
+			
 			if (product.haveProblems) {
-				console.log("по продукту", product.id, " есть проблемы с инпутами");
 				if (product.unitInputError || product.priceInputError) {
 					priceDesc = (
 						<p className="text-error">Введите целое положительное число (макс. 6 знаков)</p>
@@ -266,19 +236,16 @@ export const Products = ({ activeUnitData }) => {
 					}
 				}
 			} else {
-				// Не участвует в сравнении
 				
 				if (product.extremePricePerUnit) {
-					console.log("у продукта", product.id, " экстремальная цена")
+					// Не участвует в сравнении
 					price = (
 						<p className="product__price">{`${product.extremePricePerUnit} р/${unitLarge}`}</p>
 					);
-					priceDesc = (
-						<p className="price-desc">Не участвует в сравнении</p>
-					);
+					priceDesc = <p className="price-desc">Не участвует в сравнении</p>;
 				} else {
-					// Не участвует в сравнении
-					if (product.placeInRating === "") {						
+					if (product.placeInRating === "") {
+						// Не участвует в сравнении
 						price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
 					}
 					//
@@ -290,15 +257,13 @@ export const Products = ({ activeUnitData }) => {
 					if (product.placeInRating === comparedProducts) {
 						resultClasses += " product__result--worst-price";
 						price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
-						priceDesc = <p className="price-desc worst-price">Дороже на:</p>;
+						priceDesc = <p className="price-desc worst-price">Дороже на:</p>;						
 						priceDiff = (
 							<p className="price-diff">
 								<span className="worst-price">{`${product.extraCost} р/${unitLarge}`}</span> |{" "}
-								<span className="worst-price">{`${product.extraPercent}`}</span>
+								<span className="worst-price">{`${product.extraPercent || product.extremeExtraPercent}`}</span>
 							</p>
 						);
-						// priceDiff = <p className="text-error">{`${product.extraCost} р/${unitLarge}`}</p>;
-						// priceDiffPercent = <p className="text-error">{`${product.extraPercent}`}</p>;
 					}
 					if (product.placeInRating > 1 && product.placeInRating < comparedProducts) {
 						resultClasses += " product__result--mid-price";
@@ -307,7 +272,7 @@ export const Products = ({ activeUnitData }) => {
 						priceDiff = (
 							<p className="price-diff">
 								<span className="mid-price">{`${product.extraCost} р/${unitLarge}`}</span> |{" "}
-								<span className="mid-price">{`${product.extraPercent}`}</span>
+								<span className="mid-price">{`${product.extraPercent || product.extremeExtraPercent}`}</span>
 							</p>
 						);
 					}
