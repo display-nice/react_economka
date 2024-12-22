@@ -1,0 +1,192 @@
+/* -------------- Продукт -------------- */
+.products {	
+	display: grid;
+	margin-top: 15px;
+	gap: 10px;
+}
+
+.product {
+	display: grid;
+	grid-template-columns: 0.88fr 0.12fr;
+	gap: 6px;
+}
+
+.product__main {
+	/* прямой родительский контейнер для всей начинки */
+	display: grid;
+	grid-template-areas:
+		"h h h"
+		"a b e"
+		"c d e";
+	grid-template-columns: 1.2fr 1fr 2fr;
+	align-items: center;
+	gap: 7px;
+	padding: 6px 4px;
+	background-color: var(--product-bg);
+	border: 1px solid lightgray;
+	box-shadow: 2px 2px 0 0 var(--tiles-shadow);
+}
+
+
+/* -------------- Инпуты и лейблы к ним -------------- */
+.product__input {
+	outline: none;
+	max-width: 64px;
+	border-radius: 7px;
+	border: 1.4px solid var(--input-border);
+	background-color: var(--input-bg);
+	box-shadow: 0 0 0 0.4px var(--input-shadow);
+	text-align: right;
+}
+.product__input:hover {
+	box-shadow: 0 0 0 1px var(--input-hover-shadow);
+}
+.product__input:focus {
+	box-shadow: 0 0 0 1.6px var(--input-focus-shadow);
+}
+
+.product__input--error {
+	border: 1.4px solid var(--error) !important;
+	box-shadow: 0 0 0 1.4px var(--error) !important;
+}
+.product__input--error:hover {
+	box-shadow: 0 0 0 1px var(--error) !important;
+}
+.product__input--error:focus {
+	box-shadow: 0 0 0 1.6px var(--error) !important;
+}
+
+.product__label {
+	margin-left: 2px;
+	font-weight: 700;
+	font-size: 15px;
+	height: 33px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+.product__input--name {
+	grid-area: h;
+	max-width: none;
+	text-align: center;
+}
+.product__input--name::placeholder {
+	text-align: center;
+}
+.product__label--unit {
+	grid-area: a;
+}
+.product__label--price {
+	grid-area: c;
+}
+.product__input--unit {
+	grid-area: b;
+}
+.product__input--price {
+	grid-area: d;
+}
+
+
+/* -------------- Результат -------------- */
+.product__result {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	height: 88px;
+	grid-area: e;
+	margin-left: 3px;
+	background-color: var(--neutral-price-bg);
+	box-shadow: -4px 0 0 var(--neutral-price-shadow);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+
+.product__result--best {
+	background-color: var(--best-price-bg);
+	box-shadow: -4px 0 0 var(--best-price);
+}
+.product__result--mid {
+	background-color: var(--mid-price-bg);
+	box-shadow: -4px 0 0 var(--mid-price);
+}
+.product__result--worst {
+	background-color: var(--worst-price-bg);
+	box-shadow: -4px 0 0 var(--worst-price);
+}
+
+
+.product__price {
+	font-size: 15px;
+}
+
+
+.product__price-desc {
+	font-size: 14px;
+}
+.product__price-desc--best {
+	color: var(--best-price);
+}
+.product__price-desc--mid {
+	color: var(--mid-price);
+}
+.product__price-desc--worst {
+	color: var(--worst-price);
+}
+
+
+.product__price-diff {
+	font-size: 14px;
+}
+
+
+/* -------------- кнопки удаления и очистки на продукте  -------------- */
+.product__controls {
+	display: grid;
+	justify-content: center;
+	align-items: center;
+}
+.product__remove,
+.product__clear {
+	width: 32px;
+	padding: 4px;
+	background-color: var(--product-bg);
+	box-shadow: 2px 2px 0 0 var(--tiles-shadow);
+}
+.product__remove:active,
+.product__clear:active {
+	box-shadow: 0 0 0 0;
+}
+
+/* -------------- кнопка "Добавить продукт" -------------- */
+.products__addnew {
+	margin-top: 10px;
+	height: 90px;
+	display: grid;
+	justify-items: center;
+	align-content: center;
+	background-color: var(--product-bg);
+	border: 1px solid lightgray;
+	box-shadow: 2px 2px 0 0 var(--tiles-shadow);
+}
+.products__addnew:active {
+	box-shadow: 0 0 0 0 var(--tiles-shadow);
+}
+.products__addnew svg {
+	padding-top: 12px;
+}
+.products__addnew p {
+	margin: 12px;
+}
+
+.product__main,
+.product__result,
+.product__remove,
+.product__clear,
+.products__addnew {
+	border-radius: 10px;
+}

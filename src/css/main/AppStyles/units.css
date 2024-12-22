@@ -1,0 +1,42 @@
+/* Кнопки единиц измерения */
+.units {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	border: 1px solid lightgray;
+	border-radius: 10px;
+}
+
+.units__btn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 11px;
+	height: 46px;
+	background-color: var(--units-btns-second);
+	outline: none;
+	opacity: 0.65;
+}
+
+.units__btn:hover:not(.units__btn--active) {
+	background-color: var(--units-btns-main);
+	opacity: 0.7;
+	box-shadow: 0 1px 2px 0 var(--neutral-shadow);
+}
+
+.units__btn--active {
+	outline: none;
+	background-color: var(--units-btns-main);
+	opacity: 1;
+	font-weight: 700;
+	box-shadow: 1px 2px 2px 0 var(--neutral-shadow);
+}
+
+.units__btn:nth-child(1) {
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+}
+
+.units__btn:nth-child(3) {
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+}

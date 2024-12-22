@@ -1,0 +1,44 @@
+@import "./units.css";
+@import "./products.css";
+
+body {
+	height: 100dvh;
+	background-image: url("../../../img/bg3.svg");
+	background-size: cover;
+	background-position: center; /* Центрирует фон */
+	background-repeat: repeat-y;
+}
+
+p {
+	margin: 0;
+	padding: 2px;
+}
+
+button {
+	border: 0;
+}
+
+.App {
+	width: clamp(306px, 90%, 400px);
+	padding-top: 15px;
+	padding-bottom: 30px;
+	margin: 0 auto;
+}
+
+.main {
+	display: flex;
+	flex-direction: column;
+}
+
+.icon-svg-repaint {
+	fill: var(--icons-main);
+}
+
+.text-error {
+	color: var(--error);
+}
+.text-success {
+	color: var(--success);
+}
+
+

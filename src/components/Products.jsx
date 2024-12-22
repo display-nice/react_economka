@@ -8,6 +8,7 @@ export const Products = ({ activeUnitData }) => {
 	const initialState = [
 		{
 			id: 0,
+			nameInput: "",
 			unitInput: "",
 			unitInputIsEmpty: false,
 			unitInputError: false,
@@ -24,6 +25,7 @@ export const Products = ({ activeUnitData }) => {
 		},
 		{
 			id: 1,
+			nameInput: "",
 			unitInput: "",
 			unitInputIsEmpty: false,
 			unitInputError: false,
@@ -43,6 +45,7 @@ export const Products = ({ activeUnitData }) => {
 	const [comparedProducts, setComparedProducts] = useState(0);
 	const defaultProduct = {
 		id: null,
+		nameInput: "",
 		unitInput: "",
 		unitInputIsEmpty: false,
 		unitInputError: false,
@@ -68,15 +71,16 @@ export const Products = ({ activeUnitData }) => {
 			let changedProduct = { ...product };
 
 			inputNames.forEach((inputName) => {
+				// Этап 1. Валидация.
 				const inputValue = product[`${inputName}`];
-				if (inputValue > 0 && inputValue.length <= 6) {
+				if (inputValue > 0 && inputValue.length <= 10) {
 					changedProduct[`${inputName}IsEmpty`] = false;
 					changedProduct[`${inputName}Error`] = false;
 				} else {
 					if (Number(inputValue) === 0) {
 						changedProduct[`${inputName}IsEmpty`] = true;
 					}
-					if (inputValue.length > 6) {
+					if (inputValue.length > 10) {
 						changedProduct[`${inputName}Error`] = true;
 					}
 				}
@@ -96,6 +100,7 @@ export const Products = ({ activeUnitData }) => {
 
 		// !! можно объединить цикл сверху и цикл снизу
 
+		// Этап 2. Подсчёт средней цены и места в рейтинге 
 		for (let product of changedState) {
 			product.placeInRating = "";
 			product.pricePerUnit = "";
@@ -159,9 +164,8 @@ export const Products = ({ activeUnitData }) => {
 					} else if (EP > 1000) {
 						product.extremeExtraPercent = "более 1000%";
 					} else {
-						product.extraPercent = EP += '%';						
+						product.extraPercent = EP += "%";
 					}
-					
 				}
 			});
 
@@ -176,7 +180,7 @@ export const Products = ({ activeUnitData }) => {
 		const stateCopy = JSON.parse(JSON.stringify(state));
 		const i = stateCopy.findIndex((product) => product.id === id);
 		stateCopy[i][`${inputName}`] = value;
-		checkAndCalc(stateCopy);
+		inputName === "nameInput" ? setProdState(stateCopy) : checkAndCalc(stateCopy);		
 	}
 
 	const addNewProduct = () => {
@@ -205,15 +209,16 @@ export const Products = ({ activeUnitData }) => {
 	useEffect(() => {
 		const stateCopy = JSON.parse(JSON.stringify(state));
 		checkAndCalc(stateCopy);
-	}, []);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);	
 
 	// -------------------------- Рендер -----------------------------
-
+	
 	let products;
 	if (state.length === 0) {
 		products = "";
 	} else {
-		products = state.map((product) => {			
+		products = state.map((product) => {
 			let resultClasses = "product__result";
 			let unitInputClasses = "product__input product__input--unit";
 			let priceInputClasses = "product__input product__input--price";
@@ -222,11 +227,11 @@ export const Products = ({ activeUnitData }) => {
 			let priceDesc;
 			let priceDiff;
 			let priceDiffPercent;
-			
+
 			if (product.haveProblems) {
 				if (product.unitInputError || product.priceInputError) {
 					priceDesc = (
-						<p className="text-error">Введите целое положительное число (макс. 6 знаков)</p>
+						<p className="text-error">Введите положительное число (макс. 10 знаков)</p>
 					);
 					if (product.unitInputError) unitInputClasses += " product__input--error";
 					if (product.priceInputError) priceInputClasses += " product__input--error";
@@ -236,13 +241,12 @@ export const Products = ({ activeUnitData }) => {
 					}
 				}
 			} else {
-				
 				if (product.extremePricePerUnit) {
 					// Не участвует в сравнении
 					price = (
 						<p className="product__price">{`${product.extremePricePerUnit} р/${unitLarge}`}</p>
 					);
-					priceDesc = <p className="price-desc">Не участвует в сравнении</p>;
+					priceDesc = <p className="product__price-desc">не участвует в сравнении</p>;
 				} else {
 					if (product.placeInRating === "") {
 						// Не участвует в сравнении
@@ -250,29 +254,33 @@ export const Products = ({ activeUnitData }) => {
 					}
 					//
 					if (product.placeInRating === 1) {
-						resultClasses += " product__result--best-price";
+						resultClasses += " product__result--best";
 						price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
-						priceDesc = <p className="price-desc best-price">Лучшая цена</p>;
+						priceDesc = <p className="product__price-desc product__price-desc--best">Лучшая цена</p>;
 					}
 					if (product.placeInRating === comparedProducts) {
-						resultClasses += " product__result--worst-price";
+						resultClasses += " product__result--worst";
 						price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
-						priceDesc = <p className="price-desc worst-price">Дороже на:</p>;						
+						priceDesc = <p className="product__price-desc product__price-desc--worst">Дороже на:</p>;
 						priceDiff = (
-							<p className="price-diff">
-								<span className="worst-price">{`${product.extraCost} р/${unitLarge}`}</span> |{" "}
-								<span className="worst-price">{`${product.extraPercent || product.extremeExtraPercent}`}</span>
+							<p className="product__price-diff">
+								<span className="product__price-desc--worst">{`${product.extraCost} р/${unitLarge}`}</span> |{" "}
+								<span className="product__price-desc--worst">{`${
+									product.extraPercent || product.extremeExtraPercent
+								}`}</span>
 							</p>
 						);
 					}
 					if (product.placeInRating > 1 && product.placeInRating < comparedProducts) {
-						resultClasses += " product__result--mid-price";
+						resultClasses += " product__result--mid";
 						price = <p className="product__price">{`${product.pricePerUnit} р/${unitLarge}`}</p>;
-						priceDesc = <p className="price-desc mid-price">Дороже на:</p>;
+						priceDesc = <p className="product__price-desc product__price-desc--mid">Дороже на:</p>;
 						priceDiff = (
-							<p className="price-diff">
-								<span className="mid-price">{`${product.extraCost} р/${unitLarge}`}</span> |{" "}
-								<span className="mid-price">{`${product.extraPercent || product.extremeExtraPercent}`}</span>
+							<p className="product__price-diff">
+								<span className="product__price-desc--mid">{`${product.extraCost} р/${unitLarge}`}</span> |{" "}
+								<span className="product__price-desc--mid">{`${
+									product.extraPercent || product.extremeExtraPercent
+								}`}</span>
 							</p>
 						);
 					}
@@ -281,6 +289,14 @@ export const Products = ({ activeUnitData }) => {
 			return (
 				<div className="product" key={"product_id_" + product.id}>
 					<div className="product__main">
+						<input
+							className="product__input product__input--name"
+							placeholder="Название"
+							type="text"
+							name="nameInput"
+							value={product.nameInput}
+							onChange={(e) => changeInput(product.id, e.target.value, e.target.name)}
+						/>
 						<label
 							htmlFor={"product_id_" + product.id + "_unitinput"}
 							className="product__label product__label--unit"
@@ -329,7 +345,7 @@ export const Products = ({ activeUnitData }) => {
 	}
 	return (
 		<section className="products">
-			<form>{products}</form>
+			{products}
 			<button className="products__addnew" onClick={addNewProduct}>
 				<IconSvgAdd />
 				<p>Добавить продукт</p>

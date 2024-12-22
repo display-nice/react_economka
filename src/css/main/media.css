@@ -1,0 +1,50 @@
+@media screen and (min-width: 700px) {
+	.App {
+		width: 500px;
+		margin-top: 15px;
+		background-color: var(--app-bg);
+		border-radius: 10px;
+	}
+	.main {
+		width: 420px;
+		margin: 0 auto;
+		margin-top: 10px;
+	}
+
+	.units {
+		font-size: 17px;
+	}
+
+	.product__main {
+		padding: 8px 8px;
+		grid-template-columns: 1.1fr 1.1fr 2fr;
+	}
+	.product__input {
+		outline: none;
+		max-width: 85px;
+	}
+	.product__input--name {
+		max-width: none;
+	}
+	.product__remove,
+	.product__clear {
+		width: 36px;
+		padding: 5px;
+	}
+
+
+	.product__result {
+		font-size: 14px;
+	}
+	.product__price {
+		font-size: 16px;
+	}
+	.product__price-desc {
+		font-size: 14.5px;
+	}
+	.product__price-diff {
+		font-size: 14.5px;
+	}
+
+
+}
