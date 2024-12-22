@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/react_compare_the_prices/static/css/main.84cb0f59.css",
+    "main.js": "/react_compare_the_prices/static/js/main.930c91b7.js",
+    "static/media/bg3.svg": "/react_compare_the_prices/static/media/bg3.404b2654883da69d8bf6.svg",
+    "static/media/volume.svg": "/react_compare_the_prices/static/media/volume.abe830252f32fa7bc2b7c3e9383734da.svg",
+    "static/media/weight.svg": "/react_compare_the_prices/static/media/weight.f76a9447327a3cd6b3ad488f257ffa3e.svg",
+    "static/media/clear.svg": "/react_compare_the_prices/static/media/clear.409ad1c428464acda798ba44064778c1.svg",
+    "static/media/pieces.svg": "/react_compare_the_prices/static/media/pieces.ccc5a5e8362624d7f7f291836d1ac7dc.svg",
+    "static/media/add.svg": "/react_compare_the_prices/static/media/add.6fde3ae3a8716914afa73f35fbf9b2ae.svg",
+    "static/media/close.svg": "/react_compare_the_prices/static/media/close.9053561fef2ba6963069fac220c6c2e8.svg",
+    "index.html": "/react_compare_the_prices/index.html",
+    "main.84cb0f59.css.map": "/react_compare_the_prices/static/css/main.84cb0f59.css.map",
+    "main.930c91b7.js.map": "/react_compare_the_prices/static/js/main.930c91b7.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.84cb0f59.css",
+    "static/js/main.930c91b7.js"
+  ]
+}

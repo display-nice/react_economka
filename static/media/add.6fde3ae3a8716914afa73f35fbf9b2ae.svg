@@ -1,0 +1,13 @@
+<svg viewBox="0 0 64 64" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+	<g id="add-arrow-direction-button-pointer">
+		<circle class="icon-svg-repaint" cx="32" cy="32" fill="#2583A5" r="29" />
+		<path class="icon-svg-repaint" fill="#2583A5" d="m32 3a29 29 0 0 0 -20.506 49.506l41.012-41.012a28.909 28.909 0 0 0 -20.506-8.494z" />
+		<path fill="#ffffff" d="m45 28h-9v-9a4 4 0 0 0 -8 0v9h-9a4 4 0 0 0 0 8h9v9a4 4 0 0 0 8 0v-9h9a4 4 0 0 0 0-8z" />
+		<g fill="#231f20">
+			<path
+				d="m32 62a30 30 0 1 1 30-30 30.034 30.034 0 0 1 -30 30zm0-58a28 28 0 1 0 28 28 28.032 28.032 0 0 0 -28-28z" />
+			<path
+				d="m32 50a5.006 5.006 0 0 1 -5-5v-8h-8a5 5 0 0 1 0-10h8v-8a5 5 0 0 1 10 0v8h8a5 5 0 0 1 0 10h-8v8a5.006 5.006 0 0 1 -5 5zm-13-21a3 3 0 0 0 0 6h9a1 1 0 0 1 1 1v9a3 3 0 0 0 6 0v-9a1 1 0 0 1 1-1h9a3 3 0 0 0 0-6h-9a1 1 0 0 1 -1-1v-9a3 3 0 0 0 -6 0v9a1 1 0 0 1 -1 1z" />
+		</g>
+	</g>
+</svg>
