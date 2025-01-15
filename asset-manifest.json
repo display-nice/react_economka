@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/display-nice/react_economka/static/css/main.7cd6b618.css",
-    "main.js": "/display-nice/react_economka/static/js/main.e49cb876.js",
-    "static/media/bg3.svg": "/display-nice/react_economka/static/media/bg3.404b2654883da69d8bf6.svg",
-    "static/media/volume.svg": "/display-nice/react_economka/static/media/volume.abe830252f32fa7bc2b7c3e9383734da.svg",
-    "static/media/weight.svg": "/display-nice/react_economka/static/media/weight.f76a9447327a3cd6b3ad488f257ffa3e.svg",
-    "static/media/clear.svg": "/display-nice/react_economka/static/media/clear.409ad1c428464acda798ba44064778c1.svg",
-    "static/media/pieces.svg": "/display-nice/react_economka/static/media/pieces.ccc5a5e8362624d7f7f291836d1ac7dc.svg",
-    "static/media/add.svg": "/display-nice/react_economka/static/media/add.6fde3ae3a8716914afa73f35fbf9b2ae.svg",
-    "index.html": "/display-nice/react_economka/index.html",
-    "static/media/close.svg": "/display-nice/react_economka/static/media/close.9053561fef2ba6963069fac220c6c2e8.svg",
-    "main.7cd6b618.css.map": "/display-nice/react_economka/static/css/main.7cd6b618.css.map",
-    "main.e49cb876.js.map": "/display-nice/react_economka/static/js/main.e49cb876.js.map"
+    "main.css": "/react_economka/static/css/main.776d3af9.css",
+    "main.js": "/react_economka/static/js/main.358a9489.js",
+    "static/media/bg3.svg": "/react_economka/static/media/bg3.404b2654883da69d8bf6.svg",
+    "static/media/volume.svg": "/react_economka/static/media/volume.abe830252f32fa7bc2b7c3e9383734da.svg",
+    "static/media/weight.svg": "/react_economka/static/media/weight.f76a9447327a3cd6b3ad488f257ffa3e.svg",
+    "static/media/clear.svg": "/react_economka/static/media/clear.409ad1c428464acda798ba44064778c1.svg",
+    "static/media/pieces.svg": "/react_economka/static/media/pieces.ccc5a5e8362624d7f7f291836d1ac7dc.svg",
+    "static/media/add.svg": "/react_economka/static/media/add.6fde3ae3a8716914afa73f35fbf9b2ae.svg",
+    "index.html": "/react_economka/index.html",
+    "static/media/close.svg": "/react_economka/static/media/close.9053561fef2ba6963069fac220c6c2e8.svg",
+    "main.776d3af9.css.map": "/react_economka/static/css/main.776d3af9.css.map",
+    "main.358a9489.js.map": "/react_economka/static/js/main.358a9489.js.map"
   },
   "entrypoints": [
-    "static/css/main.7cd6b618.css",
-    "static/js/main.e49cb876.js"
+    "static/css/main.776d3af9.css",
+    "static/js/main.358a9489.js"
   ]
 }
