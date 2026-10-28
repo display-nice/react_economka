@@ -2,11 +2,21 @@
 @import "./products.css";
 
 body {
-	height: 100dvh;
+	/* Отступы первых дочерних элементов (кнопка переключателя дизайна)
+	   остаются внутри body и не увеличивают высоту документа —
+	   иначе на больших экранах появляется лишняя полоса прокрутки. */
+	display: flow-root;
+	/* Высота документа одинакова для всех дизайнов:
+	   не меньше окна и не меньше контента. */
+	min-height: 100dvh;
+	/* Фон задан только здесь и одинаков для всех вариантов дизайна. */
 	background-image: url("../../../img/bg3.svg");
 	background-size: cover;
 	background-position: center; /* Центрирует фон */
 	background-repeat: repeat-y;
+	/* Привязка к окну: фон не зависит от высоты контента,
+	   поэтому при переключении дизайна он не «скачет». */
+	background-attachment: fixed;
 }
 
 p {
@@ -19,10 +29,14 @@ button {
 }
 
 .App {
-	width: clamp(306px, 90%, 400px);
-	padding-top: 15px;
-	padding-bottom: 30px;
+	/* Геометрия контейнера совпадает с .d1__content варианта Vibecoded:
+	   одна и та же ширина, внутренние отступы, фон и радиус —
+	   при переключении дизайна макет не меняет ширину. */
+	width: min(500px, calc(100% - 24px));
 	margin: 0 auto;
+	padding: 28px 26px 48px;
+	background-color: var(--app-bg);
+	border-radius: 14px;
 }
 
 .main {

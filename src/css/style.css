@@ -3,3 +3,5 @@
 @import "./auxiliary/reboot.css";
 @import "./main/AppStyles/App.css";
 @import "./main/media.css";
+@import "./designs/switcher.css";
+@import "./designs/design1.css";

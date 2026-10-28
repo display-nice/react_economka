@@ -1,13 +1,7 @@
 @media screen and (min-width: 700px) {
-	.App {
-		width: 500px;
-		margin-top: 15px;
-		background-color: var(--app-bg);
-		border-radius: 10px;
-	}
 	.main {
-		width: 420px;
-		margin: 0 auto;
+		/* Внутренняя колонка занимает всю ширину подложки — 448px,
+		   как и колонка варианта Vibecoded (было 420px). */
 		margin-top: 10px;
 	}
 
@@ -48,3 +42,21 @@
 
 
 }
+
+/* Очень узкие экраны (320–379px): подпись «Цена, р.» не помещается
+   в колонку в одну строку и обрезается фиксированной высотой.
+   Уменьшаем кегль подписи — как и в Vibecoded на тех же экранах. */
+@media screen and (max-width: 379px) {
+	/* Геометрия подложки — как у .d1__content варианта Vibecoded:
+	   во всю ширину экрана, без внешних отступов и с паддингом 6px. */
+	.App {
+		width: 100%;
+		margin: 0;
+		padding: 28px 6px 48px;
+	}
+
+	.product__label {
+		font-size: 13px;
+	}
+}
+

@@ -1,6 +1,6 @@
-import {ReactComponent as WeightSvg} from "../icons/weight.svg"
-import {ReactComponent as VolumeSvg} from "../icons/volume.svg"
-import {ReactComponent as PiecesSvg} from "../icons/pieces.svg"
+import {WeightSvg} from "../icons/WeightSvg.jsx";
+import {VolumeSvg} from "../icons/VolumeSvg.jsx";
+import {PiecesSvg} from "../icons/PiecesSvg.jsx";
 
 export const Units = ({unitsData, activeUnit, handleUnitClick}) => {	
 	const icons = {
@@ -11,7 +11,7 @@ export const Units = ({unitsData, activeUnit, handleUnitClick}) => {
 	let UnitButtons = [];
 	for (let keyName in unitsData) {		
 		const value = unitsData[keyName][0];
-		const IconSvg = icons[keyName];
+		const IconsSvg = icons[keyName];
 		UnitButtons.push(
 			<button
 				key={keyName + "_btn"}
@@ -19,7 +19,7 @@ export const Units = ({unitsData, activeUnit, handleUnitClick}) => {
 				name={keyName}
 				onClick={(e) => handleUnitClick(e.currentTarget.name)}
 			>
-				<IconSvg/>
+				<IconsSvg/>
 				<div className="units__container">{value}</div>
 			</button>
 		);

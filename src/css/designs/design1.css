@@ -1,0 +1,513 @@
+/* ===== Design 1 «Формы-карточки» ===== */
+/* Спокойный фон-картинка, карточки-формы, dropdown выбора единиц в шапке,
+   действия — иконки в правом верхнем углу карточки. */
+
+.d1 {
+	--d1-card: #fdfdfd;
+	--d1-line: #cfc7b2;
+	--d1-line-strong: #b9b096;
+	--d1-text: #2e322c;
+	--d1-muted: #5f6357;
+	--d1-placeholder: #707464;
+	--d1-soft: #f1ede1;
+	--d1-accent: #3f6b50;
+	--d1-accent-soft: #e7efe6;
+	--d1-err: #b04a41;
+	--d1-err-soft: #f7e9e6;
+
+	/* Единая цветовая индикация цен: лучшая / средняя / худшая.
+	   Зелёный и красный — из Design 4, жёлтый — --mid-price (#F18F01)
+	   из Original, без изменений. */
+	--d1-best: #3e8e63;
+	--d1-best-soft: #e9f4ec;
+	--d1-mid: #f18f01;
+	--d1-mid-soft: #f7efdc;
+	--d1-worst: #b04a41;
+	--d1-worst-soft: #f7e9e6;
+
+	/* Фон страницы задаётся один раз в App.css (body) для всех дизайнов,
+	   поэтому здесь фон и высота на весь экран не дублируются —
+	   иначе слои фона различаются и при переключении «скачут». */
+	color: var(--d1-text);
+	font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+	font-size: 15px;
+	line-height: 1.45;
+}
+
+.d1__content {
+	width: min(500px, calc(100% - 24px));
+	margin: 0 auto;
+	padding: 28px 26px 48px;
+	background-color: var(--app-bg);
+	border-radius: 14px;
+}
+
+/* ---------- Шапка ---------- */
+
+.d1__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+.d1__title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13.5px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #43483c;
+	padding: 0;
+}
+
+.d1__title-icon {
+	width: 18px;
+	height: 18px;
+	flex: none;
+}
+
+/* ---------- Dropdown единиц ---------- */
+
+.d1-units {
+	position: relative;
+}
+
+.d1-units__btn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 150px;
+	padding: 8px 10px;
+	background: var(--d1-card);
+	border: 1px solid var(--d1-line-strong);
+	border-radius: 11px;
+	font: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--d1-text);
+	cursor: pointer;
+	box-shadow: 0 1px 2px rgba(40, 44, 38, 0.08);
+}
+
+.d1-units__btn:hover {
+	border-color: var(--d1-accent);
+}
+
+.d1-units__btn svg {
+	width: 19px;
+	height: 19px;
+	color: var(--d1-accent);
+	flex: none;
+}
+
+.d1-units__label {
+	flex: 1;
+	text-align: left;
+}
+
+.d1-units__chevron {
+	width: 14px;
+	height: 14px;
+	color: var(--d1-muted);
+	transition: transform 0.18s ease;
+}
+
+.d1-units__btn--open .d1-units__chevron {
+	transform: rotate(180deg);
+}
+
+.d1-units__menu {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	min-width: 178px;
+	background: var(--d1-card);
+	border: 1px solid var(--d1-line);
+	border-radius: 12px;
+	box-shadow: 0 10px 28px rgba(46, 50, 44, 0.14);
+	padding: 5px;
+	z-index: 20;
+}
+
+.d1-units__option {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	width: 100%;
+	padding: 8px 9px;
+	border-radius: 9px;
+	/* Фон варианта — цвет карточки (вместо дефолтного серого фона button) */
+	background: var(--d1-card);
+	font: inherit;
+	font-size: 14px;
+	color: var(--d1-text);
+	cursor: pointer;
+	text-align: left;
+}
+
+.d1-units__option:hover {
+	/* Светлый ховер той же светлоты, что и активный вариант (#e7efe6) */
+	background: var(--d1-soft);
+}
+
+.d1-units__option svg {
+	width: 18px;
+	height: 18px;
+	color: var(--d1-muted);
+	flex: none;
+}
+
+.d1-units__option-name {
+	flex: 1;
+}
+
+.d1-units__option--active {
+	background: var(--d1-accent-soft);
+	font-weight: 600;
+}
+
+.d1-units__option--active svg {
+	color: var(--d1-accent);
+}
+
+.d1-units__option-sub {
+	font-size: 11.5px;
+	color: var(--d1-muted);
+}
+
+/* ---------- Карточки продуктов ---------- */
+
+.d1__list {
+	display: grid;
+	/* minmax(0, 1fr): трек не растягивается от min-content содержимого,
+	   иначе карточки вылезают за пределы подложки на узких экранах */
+	grid-template-columns: minmax(0, 1fr);
+	gap: 12px;
+}
+
+.d1-card {
+	background: var(--d1-card);
+	border: 1px solid var(--d1-line);
+	border-radius: 14px;
+	box-shadow:
+		0 1px 3px rgba(40, 44, 38, 0.1),
+		0 1px 1px rgba(40, 44, 38, 0.06);
+}
+
+.d1-card__head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 12px 10px 14px;
+}
+
+/* Номер карточки с цветовой индикацией (как в Design 4) */
+
+.d1-card__rank {
+	display: inline-grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	flex: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--d1-muted);
+	font-size: 12px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.d1-card__rank--best {
+	background: var(--d1-best-soft);
+	color: var(--d1-best);
+}
+
+.d1-card__rank--mid {
+	background: var(--d1-mid-soft);
+	color: var(--d1-mid);
+}
+
+.d1-card__rank--worst {
+	background: var(--d1-worst-soft);
+	color: var(--d1-worst);
+}
+
+.d1-card__name {
+	flex: 1;
+	min-width: 0;
+	background: transparent;
+	border: 0;
+	border-bottom: 1.5px solid var(--d1-line-strong);
+	padding: 4px 2px;
+	font: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	color: #000;
+	outline: none;
+	transition: background-color 0.15s ease;
+}
+
+.d1-card__name::placeholder {
+	color: var(--d1-placeholder);
+	font-weight: 400;
+}
+
+.d1-card__name:hover {
+	border-bottom-color: var(--d1-accent);
+	background: rgba(63, 107, 80, 0.06);
+}
+
+.d1-card__name:focus {
+	border-bottom-color: var(--d1-accent);
+	background: rgba(63, 107, 80, 0.1);
+}
+
+.d1-card__actions {
+	display: flex;
+	gap: 4px;
+	flex: none;
+}
+
+.d1-card__action {
+	width: 32px;
+	height: 32px;
+	display: grid;
+	place-items: center;
+	border-radius: 9px;
+	color: #26827c;
+	cursor: pointer;
+	padding: 0;
+}
+
+.d1-card__action svg {
+	width: 18px;
+	height: 18px;
+}
+
+.d1-card__action:hover {
+	background: #d5f0ef;
+	color: #1d6f6a;
+}
+
+.d1-card__action--remove {
+	color: var(--d1-err);
+}
+
+.d1-card__action--remove:hover {
+	background: var(--d1-err-soft);
+	color: #963f37;
+}
+
+.d1-card__fields {
+	display: grid;
+	/* min-content числовых инпутов (~144px каждый) шире колонок на узких
+	   экранах: без minmax(0, 1fr) карточка переполнялась вправо */
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 10px;
+	padding: 2px 14px 0;
+}
+
+.d1-field__label {
+	display: block;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: #000;
+	margin-bottom: 4px;
+}
+
+.d1-field__input {
+	width: 100%;
+	padding: 9px 10px;
+	background: var(--d1-soft);
+	border: 1px solid var(--d1-line-strong);
+	border-radius: 10px;
+	font: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	text-align: right;
+	color: #000;
+	outline: none;
+}
+
+.d1-field__input::placeholder {
+	color: var(--d1-placeholder);
+	opacity: 1;
+}
+
+.d1-field__input:hover {
+	border-color: var(--d1-accent);
+	background: #f5f2e7;
+}
+
+.d1-field__input:focus {
+	border-color: var(--d1-accent);
+	box-shadow: 0 0 0 3px rgba(63, 107, 80, 0.3);
+	background: var(--d1-soft);
+}
+
+.d1-field__input--error {
+	border-color: var(--d1-err);
+	background: var(--d1-err-soft);
+}
+
+.d1-field__input--error:focus {
+	box-shadow: 0 0 0 3px rgba(176, 74, 65, 0.28);
+}
+
+/* ---------- Результат в карточке ---------- */
+
+.d1-card__result {
+	/* Grid вместо flex: комбинация «базовая линия + центрирование» во flex
+	   не центрирует содержимое (align-content игнорируется при
+	   align-items: baseline), а при выравнивании по центру статус (14px)
+	   «уезжал» вверх примерно на 1.5px относительно цены (16px). */
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: baseline;
+	align-content: center;
+	gap: 12px;
+	margin-top: 12px;
+	padding: 6px 14px;
+	border-top: 1px dashed var(--d1-line);
+	/* Фиксированная высота: блок не «прыгает», когда описание занимает две строки */
+	height: 64px;
+}
+
+.d1-card__result--best {
+	background: var(--d1-best-soft);
+}
+
+.d1-card__result--error {
+	background: var(--d1-err-soft);
+}
+
+.d1-card__result--excluded {
+	background: var(--d1-soft);
+}
+
+.d1-card__note {
+	flex: 1;
+	font-size: 14px;
+	font-weight: 700;
+	text-align: right;
+}
+
+.d1-card__price {
+	flex: none;
+	font-size: 16px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+}
+
+/* Цветовая индикация результата (единая с номером карточки).
+   Модификатор статуса приходит с карточки: d1-card--best/mid/worst/...
+   Цвет меняется только у текста описания (note); цена остаётся
+   основным цветом текста при любом статусе. */
+
+.d1-card--best .d1-card__note {
+	color: var(--d1-best);
+}
+
+.d1-card--mid .d1-card__note {
+	color: var(--d1-mid);
+}
+
+.d1-card--worst .d1-card__note {
+	color: var(--d1-worst);
+}
+
+.d1-card--error .d1-card__note {
+	color: var(--d1-err);
+}
+
+.d1-card--incomplete .d1-card__note {
+	color: #000;
+}
+
+.d1-card--excluded .d1-card__note {
+	color: var(--d1-muted);
+}
+
+/* ---------- Кнопка добавления ---------- */
+
+.d1__add {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	width: 100%;
+	margin-top: 14px;
+	padding: 26.5px 14px;
+	background: var(--d1-card);
+	border: 1.5px dashed var(--d1-line-strong);
+	border-radius: 14px;
+	font: inherit;
+	font-size: 14.5px;
+	font-weight: 600;
+	color: #000;
+	cursor: pointer;
+}
+
+/* Иконка из Original: класс .icon-svg-repaint красит её в --icons-main (#d54a50) */
+.d1__add svg {
+	width: 19px;
+	height: 19px;
+}
+
+/* Ховер: подсветка границы акцентным цветом (как у инпутов), фон не меняется */
+.d1__add:hover {
+	border-color: var(--d1-accent);
+}
+
+/* «Призрак макета»: в десктопной версии кнопка и её содержимое лежат
+   с лёгкой прозрачностью и материализуются при наведении.
+   В мобильной версии прозрачность не применяется. */
+@media screen and (min-width: 700px) {
+	.d1__add {
+		opacity: 0.7;
+	}
+
+	.d1__add:hover,
+	.d1__add:focus-visible {
+		opacity: 1;
+	}
+}
+
+/* ---------- Мобильные ---------- */
+
+@media screen and (max-width: 379px) {
+	/* На узких экранах подложка занимает всю ширину: без внешних
+	   отступов, внутренние горизонтальные отступы минимальны (6px),
+	   чтобы не отнимать место у содержимого. */
+	.d1__content {
+		width: 100%;
+		margin: 0;
+		padding: 28px 6px 48px;
+	}
+
+	.d1__title {
+		font-size: 11.5px;
+		letter-spacing: 0.04em;
+	}
+
+	.d1__title-icon {
+		width: 15px;
+		height: 15px;
+	}
+
+	.d1-card__fields {
+		gap: 8px;
+		padding: 2px 12px 0;
+	}
+
+	.d1-field__input {
+		padding: 8px 9px;
+		font-size: 14px;
+	}
+}

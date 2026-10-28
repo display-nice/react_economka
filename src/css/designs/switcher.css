@@ -1,0 +1,104 @@
+/* ---------- Переключатель дизайнов (общий элемент) ---------- */
+/* На ПК — плавающая кнопка в правом верхнем углу,
+   на мобильных — в правом нижнем (меню открывается вверх). */
+
+.switcher {
+	position: fixed;
+	top: 12px;
+	right: 12px;
+	z-index: 90;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 8px;
+}
+
+.switcher__toggle {
+	width: 42px;
+	height: 42px;
+	border-radius: 50%;
+	background: #ffffff;
+	border: 1px solid #d8d5cf;
+	box-shadow: 0 2px 8px rgba(30, 30, 30, 0.14);
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	color: #4a4a44;
+	padding: 0;
+}
+
+.switcher__toggle:hover {
+	color: #1e1e1a;
+}
+
+/* Иконка кнопки — цветовая палитра (файл из корня проекта:
+   palitra_hups7xnhm562.svg). Ранее использовавшиеся иконки сохранены
+   в корне проекта: tsvetovaya_palitra_jazy6t477gxe.svg и sliders.svg. */
+.switcher__toggle-icon {
+	width: 22px;
+	height: 22px;
+}
+
+.switcher__menu {
+	min-width: 158px;
+	background: #ffffff;
+	border: 1px solid #d8d5cf;
+	border-radius: 12px;
+	box-shadow: 0 8px 24px rgba(30, 30, 30, 0.16);
+	padding: 6px;
+	display: grid;
+	gap: 2px;
+}
+
+.switcher__item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	width: 100%;
+	padding: 8px 10px;
+	border-radius: 8px;
+	background: transparent;
+	font-size: 13.5px;
+	font-weight: 500;
+	font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+	color: #4a4a44;
+	cursor: pointer;
+	text-align: left;
+}
+
+.switcher__item:hover {
+	background: #f2f1ec;
+}
+
+.switcher__item--active {
+	background: #eef0ea;
+	color: #1e1e1a;
+	font-weight: 600;
+}
+
+.switcher__item svg {
+	width: 15px;
+	height: 15px;
+	color: #4e7a5f;
+	flex: none;
+}
+
+/* Мобильные: кнопка в потоке страницы (правый верхний угол),
+   чтобы плавающий элемент не перекрывал контент.
+   Меню открывается вниз как поповер. */
+@media screen and (max-width: 879px) {
+	.switcher {
+		position: relative;
+		top: auto;
+		right: auto;
+		width: fit-content;
+		margin: 10px 12px 0 auto;
+	}
+
+	.switcher__menu {
+		position: absolute;
+		top: calc(100% + 8px);
+		right: 0;
+	}
+}
